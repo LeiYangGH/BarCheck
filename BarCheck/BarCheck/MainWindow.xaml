@@ -4,9 +4,63 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BarCheck"
+        xmlns:cvt="clr-namespace:BarCheck.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="350" Width="525"
+		DataContext="{Binding Main, Source={StaticResource Locator}}"
+		>
+	<Window.Resources>
+		<Style TargetType="TextBlock" x:Key="BarcodeStyle">
+			<Setter Property="FontSize" Value="20"/>
+		</Style>
+		<cvt:InverseBooleanConverter x:Key="InvBool"/>
+
+	</Window.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
+			<RowDefinition />
+			<RowDefinition Height="auto"/>
+		</Grid.RowDefinitions>
+		<Menu Grid.ColumnSpan="2">
+			<MenuItem Header="{Binding PortName,Mode=OneWay}" Focusable="False"></MenuItem>
+			<MenuItem Header="运行" Command="{Binding OpenCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+			<MenuItem Header="停止" Command="{Binding CloseCommand}" IsEnabled="{Binding IsOpened, Mode=OneWay}"></MenuItem>
+			<MenuItem Header="从文件导入条码"   Command="{Binding Add10KCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+			<MenuItem Header="设置" Command="{Binding SetCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+			<MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+			<CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
+		</Menu>
+		<TextBlock Style="{StaticResource BarcodeStyle}" HorizontalAlignment="Center" Text="{Binding ObsAllBarcodes.Count,Mode=OneWay}" Grid.Row="1" Grid.Column="0"/>
+		<TextBlock Style="{StaticResource BarcodeStyle}" HorizontalAlignment="Center" Text="{Binding ObsDupBarcodes.Count,Mode=OneWay}"  Grid.Row="1" Grid.Column="1"/>
+		<ListBox Name="lstAll" Margin="2,1" Grid.Row="2" Grid.Column="0" 
+                 ItemsSource="{Binding ObsAllBarcodes,Mode=OneWay,IsAsync=True}" 
+                 local:ListBoxBehavior.ScrollOnNewItem="True"
+                 SelectedItem="{Binding SelectedAllBarcode,Mode=OneWayToSource}"
+                 VirtualizingPanel.IsVirtualizing="true"
+                 VirtualizingPanel.VirtualizationMode="Recycling" 
+                  HorizontalContentAlignment="Stretch">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+						<TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
+						<TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneTime}" >
+						</TextBlock>
+                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneTime}" >
+                        </TextBlock>
+                    </Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		 
+		 
+		<TextBox  Grid.Row="3"   IsReadOnly="True" HorizontalAlignment="Stretch"
+                  Text="{Binding Message,Mode=OneWay}"></TextBox>
+	</Grid>
 </Window>
