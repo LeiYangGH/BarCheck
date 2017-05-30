@@ -442,10 +442,26 @@ namespace BarCheck.ViewModel
                 {
                     this.HardwareBarcode = barcode;
                     int oldCount = this.ObsAllBarcodes.Count;
-                    if (this.ObsAllBarcodes.Any(x => barcode.StartsWith(x.Barcode)))
-                        return;
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, oldCount + 1);
-                    this.ObsAllBarcodes.Add(newAllVM);
+                    if (oldCount > 0)
+                    {
+                        AllBarcodeViewModel lastAllVM = this.ObsAllBarcodes.Last();
+                        if (newAllVM.Barcode == lastAllVM.Barcode)
+                        {
+                            if (string.Compare(newAllVM.Grade, lastAllVM.Grade) < 0)
+                            {
+                                lastAllVM.Grade = newAllVM.Grade;
+                            }
+                        }
+                        else
+                        {
+                            this.ObsAllBarcodes.Add(newAllVM);
+                        }
+                    }
+                    else
+                    {
+                        this.ObsAllBarcodes.Add(newAllVM);
+                    }
                 }));
         }
 
