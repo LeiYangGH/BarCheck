@@ -32,8 +32,8 @@
 			<MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
 			<CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
 		</Menu>
-		<TextBlock Style="{StaticResource BarcodeStyle}" HorizontalAlignment="Center" Text="{Binding ObsAllBarcodes.Count,Mode=OneWay}" Grid.Row="1" Grid.Column="0"/>
-		<TextBlock Style="{StaticResource BarcodeStyle}" HorizontalAlignment="Center" Text="{Binding ObsDupBarcodes.Count,Mode=OneWay}"  Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Style="{StaticResource BarcodeStyle}" HorizontalAlignment="Center" Text="{Binding HardwareBarcode,Mode=OneWay}" Grid.Row="1" Grid.Column="0"/>
+		 
 		<ListBox Name="lstAll" Margin="2,1" Grid.Row="2" Grid.Column="0" 
                  ItemsSource="{Binding ObsAllBarcodes,Mode=OneWay,IsAsync=True}" 
                  local:ListBoxBehavior.ScrollOnNewItem="True"

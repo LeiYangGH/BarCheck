@@ -55,6 +55,24 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private string hardwareBarcode;
+        public string HardwareBarcode
+        {
+            get
+            {
+                return this.hardwareBarcode;
+            }
+            set
+            {
+                if (this.hardwareBarcode != value)
+                {
+                    this.hardwareBarcode = value;
+                    this.RaisePropertyChanged(nameof(HardwareBarcode));
+                }
+            }
+        }
+
+
         public bool IsOpened
         {
             get
@@ -421,6 +439,7 @@ namespace BarCheck.ViewModel
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
+                    this.HardwareBarcode = barcode;
                     int oldCount = this.ObsAllBarcodes.Count;
                     if (this.ObsAllBarcodes.Any(x => barcode.StartsWith(x.Barcode)))
                         return;

@@ -11,8 +11,9 @@ namespace BarCheck.ViewModel
     {
         public AllBarcodeViewModel(string barcodeWithGrade, int index)
         {
-            this.barcode = barcodeWithGrade.Substring(0, barcodeWithGrade.Length - 1);
-            this.Grade = Convert.ToInt32(barcodeWithGrade.Substring(barcodeWithGrade.Length - 2, 1));
+            string[] ss = barcodeWithGrade.Trim().Split(new char[] { '+' });
+            this.barcode = ss[0];
+            this.Grade = ss[1];
             this.index = index;
         }
 
@@ -51,8 +52,8 @@ namespace BarCheck.ViewModel
         }
 
 
-        private int grade;
-        public int Grade
+        private string grade;
+        public string Grade
         {
             get
             {
