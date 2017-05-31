@@ -11,6 +11,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Diagnostics;
 using BarCheck.Properties;
+using System.Collections.Generic;
 
 namespace BarCheck.ViewModel
 {
@@ -69,6 +70,23 @@ namespace BarCheck.ViewModel
                 {
                     this.hardwareBarcode = value;
                     this.RaisePropertyChanged(nameof(HardwareBarcode));
+                }
+            }
+        }
+
+        private int currentBestGrade;
+        public int CurrentBestGrade
+        {
+            get
+            {
+                return this.currentBestGrade;
+            }
+            set
+            {
+                if (this.currentBestGrade != value)
+                {
+                    this.currentBestGrade = value;
+                    this.RaisePropertyChanged(nameof(CurrentBestGrade));
                 }
             }
         }
@@ -246,6 +264,42 @@ namespace BarCheck.ViewModel
             }
         }
 
+
+        //1
+        private bool isManualAdding;
+        private RelayCommand manualAddCommand;
+
+        public RelayCommand ManualAddCommand
+        {
+            get
+            {
+                return manualAddCommand
+                  ?? (manualAddCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isManualAdding)
+                        {
+                            return;
+                        }
+
+                        isManualAdding = true;
+                        ManualAddCommand.RaiseCanExecuteChanged();
+
+                        await ManualAdd();
+
+                        isManualAdding = false;
+                        ManualAddCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isManualAdding));
+            }
+        }
+        private async Task ManualAdd()
+        {
+            Log.Instance.Logger.Info("ManualAddtings");
+            this.GotBarcode(this.HardwareBarcode);
+        }
+        //2
+
         private bool isSeting;
         private RelayCommand setCommand;
 
@@ -333,6 +387,22 @@ namespace BarCheck.ViewModel
                 this.Message = ex.Message;
                 return false;
             }
+        }
+
+        private Dictionary<string, int> dicGradeProgress
+            = new Dictionary<string, int>()
+            {
+                { "A",100 },
+                { "B",83 },
+                { "C",66 },
+                { "D",50 },
+                { "E",33 },
+                { "F",16 },
+                { "-",0 },
+            };
+        private void SetBestProgress(string grade)
+        {
+            this.CurrentBestGrade = this.dicGradeProgress[grade];
         }
 
         private bool ExportAllBarocdeTxt(string tabTxtFileName)
@@ -451,16 +521,19 @@ namespace BarCheck.ViewModel
                             if (string.Compare(newAllVM.Grade, lastAllVM.Grade) < 0)
                             {
                                 lastAllVM.Grade = newAllVM.Grade;
+                                this.SetBestProgress(newAllVM.Grade);
                             }
                         }
                         else
                         {
                             this.ObsAllBarcodes.Add(newAllVM);
+                            this.SetBestProgress(newAllVM.Grade);
                         }
                     }
                     else
                     {
                         this.ObsAllBarcodes.Add(newAllVM);
+                        this.SetBestProgress(newAllVM.Grade);
                     }
                 }));
         }

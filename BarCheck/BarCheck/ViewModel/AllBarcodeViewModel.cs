@@ -11,9 +11,18 @@ namespace BarCheck.ViewModel
     {
         public AllBarcodeViewModel(string barcodeWithGrade, int index)
         {
-            string[] ss = barcodeWithGrade.Trim().Split(new char[] { '+' });
-            this.barcode = ss[0];
-            this.Grade = ss[1];
+            barcodeWithGrade = barcodeWithGrade.Trim();
+            if (barcodeWithGrade.Contains("+"))
+            {
+                string[] ss = barcodeWithGrade.Split(new char[] { '+' });
+                this.barcode = ss[0];
+                this.Grade = ss[1];
+            }
+            else
+            {
+                this.barcode = barcodeWithGrade;
+                this.Grade = "-";
+            }
             this.index = index;
         }
 
