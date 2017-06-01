@@ -68,7 +68,7 @@
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneTime}" >
                         </TextBlock>
-                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneTime}" >
+                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneWay}" >
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

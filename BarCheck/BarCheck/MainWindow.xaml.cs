@@ -28,6 +28,10 @@ namespace BarCheck
             InitializeComponent();
             this.mainVM = this.DataContext as MainViewModel;
             MainWindow.Instance = this;
+            this.Closing += (s, e) =>
+              {
+                  BarcodeHistory.Instance.Close();
+              };
         }
     }
 }

@@ -24,6 +24,7 @@ namespace BarCheck.ViewModel
                 this.Grade = "-";
             }
             this.index = index;
+            this.Date = DateTime.Now;
         }
 
         private int index;
@@ -76,6 +77,11 @@ namespace BarCheck.ViewModel
                     this.RaisePropertyChanged(nameof(Grade));
                 }
             }
+        }
+
+        public DateTime Date
+        {
+            get;
         }
 
 

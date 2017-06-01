@@ -295,7 +295,7 @@ namespace BarCheck.ViewModel
         }
         private async Task ManualAdd()
         {
-            Log.Instance.Logger.Info("ManualAddtings");
+            Log.Instance.Logger.Info($"Manual add {this.HardwareBarcode}");
             this.GotBarcode(this.HardwareBarcode);
         }
         //2
@@ -528,6 +528,7 @@ namespace BarCheck.ViewModel
                         {
                             this.ObsAllBarcodes.Add(newAllVM);
                             this.SetBestProgress(newAllVM.Grade);
+                            BarcodeHistory.Instance.AppendBarcode(this.ObsAllBarcodes[oldCount - 1]);
                         }
                     }
                     else
