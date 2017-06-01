@@ -510,7 +510,8 @@ namespace BarCheck.ViewModel
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
-                    this.HardwareBarcode = barcode;
+                    if (!isManualAdding)
+                        this.HardwareBarcode = barcode;
                     int oldCount = this.ObsAllBarcodes.Count;
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, oldCount + 1);
                     if (oldCount > 0)
