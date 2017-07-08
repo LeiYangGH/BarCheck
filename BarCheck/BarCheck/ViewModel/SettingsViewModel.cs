@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : ViewModelBase, IDataErrorInfo
     {
         public SettingsViewModel()
         {
@@ -33,6 +34,26 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private string duplicateError;
+        private string selectedAPortName;
+        public string SelectedAPortName
+        {
+            get
+            {
+                return this.selectedAPortName;
+            }
+            set
+            {
+                if (this.selectedAPortName != value)
+                {
+                    this.selectedAPortName = value;
+                    this.RaisePropertyChanged(nameof(SelectedAPortName));
+                    if (value == this.SelectedPortName)
+                        this.duplicateError = "报警串口不能和条码扫描串口相同！";
+                }
+            }
+        }
+
 
         private ObservableCollection<string> obsSerialPortNames;
         public ObservableCollection<string> ObsSerialPortNames
@@ -51,5 +72,8 @@ namespace BarCheck.ViewModel
             }
         }
 
+        string IDataErrorInfo.Error => this.duplicateError;
+
+        string IDataErrorInfo.this[string columnName] => this.duplicateError;
     }
 }

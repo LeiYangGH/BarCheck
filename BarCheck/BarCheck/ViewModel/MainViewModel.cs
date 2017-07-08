@@ -19,6 +19,7 @@ namespace BarCheck.ViewModel
     {
         //private SerialPort serialPort = new SerialPort("COM?", 9600);
         private SerialPort serialPort = new SerialPort("COM?", 115200);
+        private SerialPort aserialPort = new SerialPort("COM?", 9600);
 
         public MainViewModel()
         {
@@ -28,6 +29,7 @@ namespace BarCheck.ViewModel
             this.PortName = "COM10";
 #else
             this.serialPort.PortName = this.GetFirstPortName();
+            this.APortName = this.GetSecondPortName();
 #endif
             this.obsAllBarcodes = new ObservableCollection<AllBarcodeViewModel>();
 
@@ -53,6 +55,21 @@ namespace BarCheck.ViewModel
                 {
                     this.serialPort.PortName = value;
                     this.RaisePropertyChanged(nameof(PortName));
+                }
+            }
+        }
+
+        public string APortName
+        {
+            get
+            {
+                return this.aserialPort.PortName;
+            }
+            set
+            {
+                if (this.aserialPort.PortName != value)
+                {
+                    this.aserialPort.PortName = value;
                 }
             }
         }
@@ -192,7 +209,7 @@ namespace BarCheck.ViewModel
                 Settings.Default.PortName = this.PortName;
                 Settings.Default.Save();
             }
-
+            this.OpenASerialPort();
         }
 
         public void OpenSerialPort()
@@ -202,6 +219,28 @@ namespace BarCheck.ViewModel
                 this.serialPort.Open();
                 Log.Instance.Logger.InfoFormat("open {0} success", this.PortName);
                 this.Message = string.Format("成功打开串口{0}！", this.PortName);
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Logger.FatalFormat(ex.Message);
+                MessengerInstance.Send<string>(ex.Message);
+            }
+        }
+
+        private void OpenASerialPort()
+        {
+            try
+            {
+                if (this.aserialPort.IsOpen)
+                    return;
+                this.aserialPort.Open();
+                Log.Instance.Logger.InfoFormat("open alarm {0} success", this.APortName);
+                this.Message = string.Format("成功打开报警串口{0}！", this.APortName);
+                if (this.aserialPort.IsOpen)
+                {
+                    Settings.Default.APortName = this.APortName;
+                    Settings.Default.Save();
+                }
             }
             catch (Exception ex)
             {
@@ -255,6 +294,7 @@ namespace BarCheck.ViewModel
                 this.serialPort.Close();
                 Log.Instance.Logger.InfoFormat("close {0} success", this.PortName);
                 this.Message = string.Format("成功关闭串口{0}！", this.PortName);
+                this.CloseASerialPort();
 
             }
             catch (Exception ex)
@@ -264,7 +304,20 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private void CloseASerialPort()
+        {
+            try
+            {
+                Log.Instance.Logger.InfoFormat("close alarm {0} success", this.APortName);
+                this.Message = string.Format("成功关闭报警串口{0}！", this.APortName);
 
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Logger.FatalFormat(ex.Message);
+                MessengerInstance.Send<string>(ex.Message);
+            }
+        }
         //1
         private bool isManualAdding;
         private RelayCommand manualAddCommand;
@@ -335,10 +388,12 @@ namespace BarCheck.ViewModel
             setWin.Owner = MainWindow.Instance;
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
+            setVM.SelectedAPortName = this.APortName;
 
             if (setWin.ShowDialog() ?? false)
             {
                 this.PortName = setVM.SelectedPortName;
+                this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
             }
 
@@ -505,6 +560,39 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }
+
+        public void SendString(string s)
+        {
+            try
+            {
+                byte[] bytes = StringToByteArray(s);
+                this.aserialPort.Write(bytes, 0, bytes.Length);
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Logger.Error(ex.Message);
+            }
+        }
+        public async void Alarm()
+        {
+            await Task.Run(async () =>
+             {
+                 this.SendString("0110001A000101CE18");
+                 await Task.Delay(2000);
+                 this.SendString("0110001A0001000FD8");
+             });
+
+        }
+        
+
         private void GotBarcode(string barcode)
         {
             if (App.Current != null)//walkaround
@@ -565,6 +653,27 @@ namespace BarCheck.ViewModel
                 return "COM?";
         }
 
+        private string GetSecondPortName()
+        {
+            string[] names = SerialPort.GetPortNames();
+            if (names.Length > 0)
+            {
+                string setPort = Settings.Default.APortName;
+
+                if (!string.IsNullOrWhiteSpace(setPort) && names.Contains(setPort))
+                    return setPort;
+                else
+                {
+                    var except1 = names.Where(x => x != this.PortName);
+                    if (except1.Any())
+                        return except1.First();
+                    else
+                        return "COM?";
+                }
+            }
+            else
+                return "COM?";
+        }
 
         public override void Cleanup()
         {

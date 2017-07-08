@@ -75,9 +75,16 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
+                    if (grade == "D" || grade == "E" || grade == "F")
+                    {
+                        MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
+                        mainVM.Alarm();
+                    }
                 }
             }
         }
+
+
 
         public DateTime Date
         {

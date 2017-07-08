@@ -17,9 +17,44 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ComboBox Grid.Row="0" ItemsSource="{Binding ObsSerialPortNames,Mode=OneWay}" Text="{Binding SelectedPortName}"
+        <TabControl >
+            <TabControl.Items>
+                <TabItem Header="条码扫描串口">
+                    <Grid>
+                        <ComboBox  Grid.Row="0" ItemsSource="{Binding ObsSerialPortNames,Mode=OneWay}" Text="{Binding SelectedPortName}"
                   HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="100" FontSize="20">
-        </ComboBox>
-        <Button Name="btnOK" Click="btnOK_Click" Grid.Row="1" HorizontalAlignment="Right" MinWidth="80" FontSize="18">确定</Button>
+                        </ComboBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="报警串口">
+                    <Grid>
+                        <ComboBox Name="cboA"  Grid.Row="0" ItemsSource="{Binding ObsSerialPortNames,Mode=OneWay}"
+                                   Text="{Binding SelectedAPortName,ValidatesOnDataErrors=true}"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="100" FontSize="20">
+                            <ComboBox.Style>
+                                <Style TargetType="{x:Type ComboBox}">
+                                    <Style.Triggers>
+                                        <Trigger Property="Validation.HasError" Value="true">
+                                            <Setter Property="ToolTip"
+                Value="{Binding RelativeSource={RelativeSource Self}, 
+                       Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+
+                        </ComboBox>
+                    </Grid>
+                </TabItem>
+            </TabControl.Items>
+        </TabControl>
+
+        <Button Name="btnOK" 
+                IsEnabled="{Binding ElementName=cboA,Path=(Validation.HasError),Converter={StaticResource InvBool}}"
+                Content="确定" Click="btnOK_Click" 
+                Grid.Row="1" HorizontalAlignment="Right" 
+                MinWidth="80" FontSize="18">
+
+        </Button>
     </Grid>
 </Window>
