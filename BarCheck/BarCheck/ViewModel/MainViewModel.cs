@@ -18,7 +18,7 @@ namespace BarCheck.ViewModel
     public class MainViewModel : ViewModelBase, IDisposable
     {
         //private SerialPort serialPort = new SerialPort("COM?", 9600);
-        private SerialPort serialPort = new SerialPort("COM?", 115200);
+        private SerialPort serialPort = new SerialPort("COM?", 9600);//115200
         private SerialPort aserialPort = new SerialPort("COM?", 9600);
 
         public MainViewModel()
