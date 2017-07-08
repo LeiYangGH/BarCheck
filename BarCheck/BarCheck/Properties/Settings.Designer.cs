@@ -46,5 +46,41 @@ namespace BarCheck.Properties {
                 this["APortName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D")]
+        public string AlarmGrade {
+            get {
+                return ((string)(this["AlarmGrade"]));
+            }
+            set {
+                this["AlarmGrade"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public int AlarmMs {
+            get {
+                return ((int)(this["AlarmMs"]));
+            }
+            set {
+                this["AlarmMs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CloseBeforeAlarm {
+            get {
+                return ((bool)(this["CloseBeforeAlarm"]));
+            }
+            set {
+                this["CloseBeforeAlarm"] = value;
+            }
+        }
     }
 }

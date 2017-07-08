@@ -75,9 +75,9 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
-                    if (grade == "D" || grade == "E" || grade == "F")
+                    MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
+                    if (string.Compare(this.grade, mainVM.alarmGrade) >= 0)
                     {
-                        MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
                         mainVM.Alarm();
                     }
                 }

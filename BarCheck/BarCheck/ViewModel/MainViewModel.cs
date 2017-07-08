@@ -12,6 +12,7 @@ using System.Text;
 using System.Diagnostics;
 using BarCheck.Properties;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BarCheck.ViewModel
 {
@@ -28,8 +29,9 @@ namespace BarCheck.ViewModel
 #if Test
             this.PortName = "COM10";
 #else
-            this.serialPort.PortName = this.GetFirstPortName();
+            this.PortName = this.GetFirstPortName();
             this.APortName = this.GetSecondPortName();
+            this.GetAlarmSettings();
 #endif
             this.obsAllBarcodes = new ObservableCollection<AllBarcodeViewModel>();
 
@@ -207,6 +209,10 @@ namespace BarCheck.ViewModel
             if (this.IsOpened)
             {
                 Settings.Default.PortName = this.PortName;
+                Settings.Default.AlarmGrade = this.alarmGrade;
+                Settings.Default.CloseBeforeAlarm = this.closeBeforeAlarm;
+                Settings.Default.AlarmMs = this.alarmMs;
+
                 Settings.Default.Save();
             }
             this.OpenASerialPort();
@@ -380,6 +386,11 @@ namespace BarCheck.ViewModel
                     () => !isSeting));
             }
         }
+
+        private bool closeBeforeAlarm;
+        private int alarmMs;
+        public string alarmGrade;
+
         private async Task Set()
         {
             Log.Instance.Logger.Info("settings");
@@ -389,12 +400,18 @@ namespace BarCheck.ViewModel
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
             setVM.SelectedAPortName = this.APortName;
+            setVM.AlarmGrade = this.alarmGrade;
+            setVM.CloseBeforeAlarm = this.closeBeforeAlarm;
+            setVM.AlarmMs = this.alarmMs;
 
             if (setWin.ShowDialog() ?? false)
             {
                 this.PortName = setVM.SelectedPortName;
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
+                this.alarmGrade = setVM.AlarmGrade;
+                this.closeBeforeAlarm = setVM.CloseBeforeAlarm;
+                this.alarmMs = setVM.AlarmMs;
             }
 
         }
@@ -581,17 +598,30 @@ namespace BarCheck.ViewModel
                 Log.Instance.Logger.Error(ex.Message);
             }
         }
-        public async void Alarm()
-        {
-            await Task.Run(async () =>
-             {
-                 this.SendString("0110001A000101CE18");
-                 await Task.Delay(2000);
-                 this.SendString("0110001A0001000FD8");
-             });
+        private Guid latestG;
+        private DateTime closeTime;
 
+        public void Alarm()
+        {
+            latestG = Guid.NewGuid();
+            Thread t = new Thread(() => AlarmFun(latestG));
+            t.IsBackground = true;
+            closeTime = DateTime.Now.AddMilliseconds(alarmMs);
+            t.Start();
         }
-        
+        public void AlarmFun(Guid g)
+        {
+            if (closeBeforeAlarm)
+                this.SendString("0110001A0001000FD8");
+            this.SendString("0110001A000101CE18");
+            while (DateTime.Now < closeTime)
+            {
+                if (g != latestG)
+                    return;
+                Thread.Sleep(50);
+            }
+            this.SendString("0110001A0001000FD8");
+        }
 
         private void GotBarcode(string barcode)
         {
@@ -635,7 +665,12 @@ namespace BarCheck.ViewModel
             this.GotBarcode(barcode);
         }
 
-
+        private void GetAlarmSettings()
+        {
+            this.alarmGrade = Settings.Default.AlarmGrade;
+            this.alarmMs = Settings.Default.AlarmMs;
+            this.closeBeforeAlarm = Settings.Default.CloseBeforeAlarm;
+        }
 
         private string GetFirstPortName()
         {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarCheck", "BarCheck\BarChe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSPWrite", "TestSPWrite\TestSPWrite.csproj", "{F3A203DF-5A25-4E43-A98E-17E0C81BD393}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAlarmTime", "TestAlarmTime\TestAlarmTime.csproj", "{5FA00667-C380-41C0-BA67-6D6DF5E935D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F3A203DF-5A25-4E43-A98E-17E0C81BD393}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3A203DF-5A25-4E43-A98E-17E0C81BD393}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3A203DF-5A25-4E43-A98E-17E0C81BD393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA00667-C380-41C0-BA67-6D6DF5E935D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA00667-C380-41C0-BA67-6D6DF5E935D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA00667-C380-41C0-BA67-6D6DF5E935D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA00667-C380-41C0-BA67-6D6DF5E935D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
