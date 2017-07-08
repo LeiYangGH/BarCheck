@@ -1,0 +1,25 @@
+﻿<Window x:Class="TestSPWrite.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestSPWrite"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <local:UCBytes Grid.Row="0" BytesText="0110001A000101CE18"/>
+        <local:UCBytes Grid.Row="1" BytesText="0110001A0001040E1B"/>
+        <local:UCBytes Grid.Row="2" BytesText="0110001A0001028E19"/>
+        <local:UCBytes Grid.Row="3" BytesText="0110001A0001034FD9"/>
+        <local:UCBytes Grid.Row="4" BytesText="0110001A000105CFDB"/>
+        <local:UCBytes Grid.Row="5" BytesText="0110001A0001000FD8"/>
+    </Grid>
+</Window>
