@@ -67,13 +67,13 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
-                    //MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
-                    MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
+                    ////MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
+                    //MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
 
-                    if (!this.grade)
-                    {
-                        mainVM.Alarm();
-                    }
+                    //if (!this.grade)
+                    //{
+                    //    mainVM.Alarm(Constants.Alarm1LightBytes);
+                    //}
                 }
             }
         }

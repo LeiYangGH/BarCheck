@@ -566,11 +566,11 @@ namespace BarCheck.ViewModel
             return bytes;
         }
 
-        public void SendString(string s)
+        public void SendBytes(byte[] bytes)
         {
             try
             {
-                byte[] bytes = StringToByteArray(s);
+                //byte[] bytes = StringToByteArray(s);
                 this.aserialPort.Write(bytes, 0, bytes.Length);
             }
             catch (Exception ex)
@@ -581,32 +581,36 @@ namespace BarCheck.ViewModel
         private Guid latestG;
         private DateTime closeTime;
 
-        public void Alarm()
+        public void Alarm(byte[] bytes)
         {
             latestG = Guid.NewGuid();
-            Thread t = new Thread(() => AlarmFun(latestG));
+            Thread t = new Thread(() => AlarmFun(latestG, bytes));
             t.IsBackground = true;
             closeTime = DateTime.Now.AddMilliseconds(alarmMs);
             t.Start();
         }
-        public void AlarmFun(Guid g)
+        public void AlarmFun(Guid g, byte[] bytes)
         {
-            this.SendString("0110001A000101CE18");
+            this.SendBytes(bytes);
             while (DateTime.Now < closeTime)
             {
                 if (g != latestG)
                     return;
                 Thread.Sleep(50);
             }
-            this.SendString("0110001A0001000FD8");
+            this.SendBytes(Constants.AlarmClose);
         }
 
         public void CheckDupAfterRename(AllBarcodeViewModel allVM)
         {
             var dups = this.ObsAllBarcodes.Where(x => x.Barcode == allVM.Barcode);
             if (dups.Count() > 1)
+            {
+                this.Alarm(Constants.Alarm2LightBytes);
                 foreach (var avm in dups)
                     avm.HasDup = true;
+            }
+
         }
 
         private void GotBarcode(string barcode)
@@ -624,6 +628,7 @@ namespace BarCheck.ViewModel
                     {
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
                         newAllVM = new AllBarcodeViewModel(barcode, false, oldCount + 1);
+                        this.Alarm(Constants.Alarm1LightBytes);
                     }
                     else
                         newAllVM = new AllBarcodeViewModel(barcode, true, oldCount + 1);
@@ -639,7 +644,10 @@ namespace BarCheck.ViewModel
                         }
                     }
                     if (hasDup)
+                    {
                         newAllVM.HasDup = true;
+                        this.Alarm(Constants.Alarm2LightBytes);
+                    }
                     BarcodeHistory.Instance.AppendBarcode(newAllVM);
 
                 }));
