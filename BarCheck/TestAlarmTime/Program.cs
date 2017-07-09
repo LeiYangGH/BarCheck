@@ -24,7 +24,6 @@ namespace TestAlarmTime
 
         private static bool closeBeforeAlarm = true;
         private static int alarmMs = 2000;
-        private static string alarmGrade;
         private static DateTime closeTime;
         private static Guid latestG;
         public static void Alarm()

@@ -74,6 +74,7 @@
     </ApplicationDefinition>
     <Compile Include="BarcodeHistory.cs" />
     <Compile Include="Capture.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Converters\Dup2ColorConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="ListBoxBehavior.cs" />

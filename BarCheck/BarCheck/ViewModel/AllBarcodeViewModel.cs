@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using Microsoft.Practices.ServiceLocation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,16 @@ namespace BarCheck.ViewModel
         public AllBarcodeViewModel(string barcodeWithGrade, int index)
         {
             barcodeWithGrade = barcodeWithGrade.Trim();
-            if (barcodeWithGrade.Contains("+"))
+            if (barcodeWithGrade.Contains(Constants.GradeSplitString))
             {
-                string[] ss = barcodeWithGrade.Split(new char[] { '+' });
+                string[] ss = barcodeWithGrade.Split(new char[] { Constants.GradeSplitChar });
                 this.barcode = ss[0];
                 this.Grade = ss[1];
             }
             else
             {
                 this.barcode = barcodeWithGrade;
-                this.Grade = "-";
+                this.Grade = Constants.GradeFailScanString;
             }
             this.index = index;
             this.Date = DateTime.Now;
@@ -75,7 +76,9 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
-                    MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
+                    //MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
+                    MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
+
                     if (string.Compare(this.grade, mainVM.alarmGrade) >= 0)
                     {
                         mainVM.Alarm();
