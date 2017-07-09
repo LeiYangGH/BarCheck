@@ -141,6 +141,8 @@ namespace BarCheck.ViewModel
             if (reWin.ShowDialog() ?? false)
             {
                 this.Barcode = setVM.InputBarcode;
+                MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
+                mainVM.CheckDupAfterRename(this);
             }
         }
     }

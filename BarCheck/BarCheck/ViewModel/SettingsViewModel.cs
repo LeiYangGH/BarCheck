@@ -33,7 +33,7 @@ namespace BarCheck.ViewModel
                 }
             }
         }
- 
+
         private int alarmMs;
         public int AlarmMs
         {
@@ -67,6 +67,8 @@ namespace BarCheck.ViewModel
                     this.RaisePropertyChanged(nameof(SelectedAPortName));
                     if (value == this.SelectedPortName)
                         this.duplicateError = "报警串口不能和条码扫描串口相同！";
+                    else
+                        this.duplicateError = null;
                 }
             }
         }
@@ -89,7 +91,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-      
+
 
         string IDataErrorInfo.Error => this.duplicateError;
 

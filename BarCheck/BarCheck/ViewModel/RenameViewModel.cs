@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace BarCheck.ViewModel
         public RenameViewModel()
         {
             this.InputBarcode = "";
+            Console.WriteLine("value--");
+
         }
 
         private string emptyError;
@@ -32,8 +35,12 @@ namespace BarCheck.ViewModel
                 {
                     this.inputBarcode = value;
                     this.RaisePropertyChanged(nameof(InputBarcode));
+                    Console.WriteLine(value);
                     if (string.IsNullOrWhiteSpace(value))
                         this.emptyError = "条码不能为空！";
+                    else
+                        this.emptyError = null;
+
                 }
             }
         }

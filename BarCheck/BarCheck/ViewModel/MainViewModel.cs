@@ -601,6 +601,14 @@ namespace BarCheck.ViewModel
             this.SendString("0110001A0001000FD8");
         }
 
+        public void CheckDupAfterRename(AllBarcodeViewModel allVM)
+        {
+            var dups = this.ObsAllBarcodes.Where(x => x.Barcode == allVM.Barcode);
+            if (dups.Count() > 1)
+                foreach (var avm in dups)
+                    avm.HasDup = true;
+        }
+
         private void GotBarcode(string barcode)
         {
             if (App.Current != null)//walkaround

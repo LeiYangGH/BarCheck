@@ -17,7 +17,19 @@
         <cvt:Bool2YesNoConverter x:Key="B2YN"/>
         <cvt:Dup2ColorConverter x:Key="Dup2C"/>
         <BooleanToVisibilityConverter x:Key="B2V"/>
+        <DataTemplate x:Key="GradeTBar">
+            <TextBlock Text="{Binding Barcode, Mode=OneTime}" FontSize="20"
+                       Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="GradeFBar">
 
+            <TextBlock    FontSize="20">
+                            <Hyperlink   
+                                        Command="{Binding RenameCommand}">
+                                 <TextBlock  Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"  Text="{Binding Path=Barcode}"/>
+            </Hyperlink>
+            </TextBlock>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -60,15 +72,25 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="4*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
-                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneWay}"  Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}">
-                        </TextBlock>
+                        <ContentPresenter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Content="{Binding Path=., Mode=OneWay}">
+                            <ContentPresenter.Style>
+                                <Style TargetType="ContentPresenter">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource GradeTBar}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Grade}" Value="False">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource GradeFBar}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentPresenter.Style>
+                        </ContentPresenter>
+                        <!--<TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneWay}"  Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}">
+                        </TextBlock>-->
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneTime,Converter={StaticResource B2YN}}" >
-                        <Button   Grid.Column="3" Content="手工补码"  
-                                  Command="{Binding RenameCommand}" IsEnabled="{Binding Grade,Mode=OneTime,Converter={StaticResource InvBool}}"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"  />
+
                         </TextBlock>
                     </Grid>
                 </DataTemplate>
