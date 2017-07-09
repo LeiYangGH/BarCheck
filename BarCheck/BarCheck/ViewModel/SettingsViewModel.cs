@@ -15,12 +15,6 @@ namespace BarCheck.ViewModel
         public SettingsViewModel()
         {
             this.obsSerialPortNames = new ObservableCollection<string>(SerialPort.GetPortNames());
-            this.obsGrades = new ObservableCollection<string>()
-            {
-                "C",
-                "D",
-                "E"
-            };
         }
 
         private string selectedPortName;
@@ -39,24 +33,7 @@ namespace BarCheck.ViewModel
                 }
             }
         }
-
-        private string alarmGrade;
-        public string AlarmGrade
-        {
-            get
-            {
-                return this.alarmGrade;
-            }
-            set
-            {
-                if (this.alarmGrade != value)
-                {
-                    this.alarmGrade = value;
-                    this.RaisePropertyChanged(nameof(AlarmGrade));
-                }
-            }
-        }
-
+ 
         private int alarmMs;
         public int AlarmMs
         {
@@ -70,23 +47,6 @@ namespace BarCheck.ViewModel
                 {
                     this.alarmMs = value;
                     this.RaisePropertyChanged(nameof(AlarmMs));
-                }
-            }
-        }
-
-        private bool closeBeforeAlarm;
-        public bool CloseBeforeAlarm
-        {
-            get
-            {
-                return this.closeBeforeAlarm;
-            }
-            set
-            {
-                if (this.closeBeforeAlarm != value)
-                {
-                    this.closeBeforeAlarm = value;
-                    this.RaisePropertyChanged(nameof(CloseBeforeAlarm));
                 }
             }
         }
@@ -129,22 +89,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-        private ObservableCollection<string> obsGrades;
-        public ObservableCollection<string> ObsGrades
-        {
-            get
-            {
-                return this.obsGrades;
-            }
-            set
-            {
-                if (this.obsGrades != value)
-                {
-                    this.obsGrades = value;
-                    this.RaisePropertyChanged(nameof(ObsGrades));
-                }
-            }
-        }
+      
 
         string IDataErrorInfo.Error => this.duplicateError;
 

@@ -11,5 +11,6 @@ namespace BarCheck
         public const char GradeSplitChar = '+';
         public const string GradeSplitString = "+";
         public const string GradeFailScanString = "-";
+        public const string NR = "NR";
     }
 }

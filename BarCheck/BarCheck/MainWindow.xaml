@@ -14,6 +14,7 @@
             <Setter Property="FontSize" Value="20"/>
         </Style>
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
+        <cvt:Bool2YesNoConverter x:Key="B2YN"/>
 
     </Window.Resources>
     <Grid>
@@ -33,10 +34,6 @@
             <CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
         </Menu>
         <Grid Grid.Row="1" Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
@@ -45,9 +42,6 @@
                        Grid.Row="0" Grid.Column="0"/>
             <Button Command="{Binding ManualAddCommand}"
                 Grid.Row="0" Grid.Column="1">手工输入</Button>
-            <ProgressBar Value="{Binding CurrentBestGrade,Mode=OneWay}"
-                Grid.Row="1" Grid.ColumnSpan="2" MinHeight="20"></ProgressBar>
-
         </Grid>
 
         <ListBox Name="lstAll" Margin="2,1" Grid.Row="2" Grid.Column="0" 
@@ -62,13 +56,13 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="4*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneTime}" >
                         </TextBlock>
-                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneWay}" >
+                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneTime,Converter={StaticResource B2YN}}" >
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

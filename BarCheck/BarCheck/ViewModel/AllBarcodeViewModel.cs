@@ -10,20 +10,10 @@ namespace BarCheck.ViewModel
 {
     public class AllBarcodeViewModel : ViewModelBase
     {
-        public AllBarcodeViewModel(string barcodeWithGrade, int index)
+        public AllBarcodeViewModel(string barcode, bool grade, int index)
         {
-            barcodeWithGrade = barcodeWithGrade.Trim();
-            if (barcodeWithGrade.Contains(Constants.GradeSplitString))
-            {
-                string[] ss = barcodeWithGrade.Split(new char[] { Constants.GradeSplitChar });
-                this.barcode = ss[0];
-                this.Grade = ss[1];
-            }
-            else
-            {
-                this.barcode = barcodeWithGrade;
-                this.Grade = Constants.GradeFailScanString;
-            }
+            this.barcode = barcode.Trim();
+            this.Grade = grade;
             this.index = index;
             this.Date = DateTime.Now;
         }
@@ -63,8 +53,8 @@ namespace BarCheck.ViewModel
         }
 
 
-        private string grade;
-        public string Grade
+        private bool grade;
+        public bool Grade
         {
             get
             {
@@ -79,7 +69,7 @@ namespace BarCheck.ViewModel
                     //MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
                     MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
 
-                    if (string.Compare(this.grade, mainVM.alarmGrade) >= 0)
+                    if (!this.grade)
                     {
                         mainVM.Alarm();
                     }

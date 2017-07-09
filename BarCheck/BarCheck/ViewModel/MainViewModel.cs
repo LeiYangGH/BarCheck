@@ -209,8 +209,6 @@ namespace BarCheck.ViewModel
             if (this.IsOpened)
             {
                 Settings.Default.PortName = this.PortName;
-                Settings.Default.AlarmGrade = this.alarmGrade;
-                Settings.Default.CloseBeforeAlarm = this.closeBeforeAlarm;
                 Settings.Default.AlarmMs = this.alarmMs;
 
                 Settings.Default.Save();
@@ -387,9 +385,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-        private bool closeBeforeAlarm;
         private int alarmMs;
-        public string alarmGrade;
 
         private async Task Set()
         {
@@ -400,8 +396,7 @@ namespace BarCheck.ViewModel
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
             setVM.SelectedAPortName = this.APortName;
-            setVM.AlarmGrade = this.alarmGrade;
-            setVM.CloseBeforeAlarm = this.closeBeforeAlarm;
+
             setVM.AlarmMs = this.alarmMs;
 
             if (setWin.ShowDialog() ?? false)
@@ -409,8 +404,7 @@ namespace BarCheck.ViewModel
                 this.PortName = setVM.SelectedPortName;
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
-                this.alarmGrade = setVM.AlarmGrade;
-                this.closeBeforeAlarm = setVM.CloseBeforeAlarm;
+
                 this.alarmMs = setVM.AlarmMs;
             }
 
@@ -611,8 +605,6 @@ namespace BarCheck.ViewModel
         }
         public void AlarmFun(Guid g)
         {
-            if (closeBeforeAlarm)
-                this.SendString("0110001A0001000FD8");
             this.SendString("0110001A000101CE18");
             while (DateTime.Now < closeTime)
             {
@@ -630,31 +622,16 @@ namespace BarCheck.ViewModel
                 {
                     if (!isManualAdding)
                         this.HardwareBarcode = barcode;
+                    barcode = barcode.Trim();
+                    AllBarcodeViewModel newAllVM = null;
                     int oldCount = this.ObsAllBarcodes.Count;
-                    AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, oldCount + 1);
-                    if (oldCount > 0)
-                    {
-                        AllBarcodeViewModel lastAllVM = this.ObsAllBarcodes.Last();
-                        if (newAllVM.Barcode == lastAllVM.Barcode)
-                        {
-                            if (string.Compare(newAllVM.Grade, lastAllVM.Grade) < 0)
-                            {
-                                lastAllVM.Grade = newAllVM.Grade;
-                                this.SetBestProgress(newAllVM.Grade);
-                            }
-                        }
-                        else
-                        {
-                            this.ObsAllBarcodes.Add(newAllVM);
-                            this.SetBestProgress(newAllVM.Grade);
-                            BarcodeHistory.Instance.AppendBarcode(this.ObsAllBarcodes[oldCount - 1]);
-                        }
-                    }
+
+                    if (barcode.ToUpper() == Constants.NR)
+                        newAllVM = new AllBarcodeViewModel(
+                            Constants.NR + DateTime.Now.ToString("ddmmssfff"), false, oldCount + 1);
                     else
-                    {
-                        this.ObsAllBarcodes.Add(newAllVM);
-                        this.SetBestProgress(newAllVM.Grade);
-                    }
+                        newAllVM = new AllBarcodeViewModel(barcode, true, oldCount + 1);
+                    this.ObsAllBarcodes.Add(newAllVM);
                 }));
         }
 
@@ -667,9 +644,7 @@ namespace BarCheck.ViewModel
 
         private void GetAlarmSettings()
         {
-            this.alarmGrade = Settings.Default.AlarmGrade;
             this.alarmMs = Settings.Default.AlarmMs;
-            this.closeBeforeAlarm = Settings.Default.CloseBeforeAlarm;
         }
 
         private string GetFirstPortName()
