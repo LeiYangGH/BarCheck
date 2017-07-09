@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using Microsoft.Practices.ServiceLocation;
 using System;
 using System.Collections.Generic;
@@ -101,5 +102,46 @@ namespace BarCheck.ViewModel
             }
         }
 
+        //1
+        private bool isRenameing;
+        private RelayCommand renameCommand;
+
+        public RelayCommand RenameCommand
+        {
+            get
+            {
+                return renameCommand
+                  ?? (renameCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isRenameing)
+                        {
+                            return;
+                        }
+
+                        isRenameing = true;
+                        RenameCommand.RaiseCanExecuteChanged();
+
+                        await Rename();
+
+                        isRenameing = false;
+                        RenameCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isRenameing));
+            }
+        }
+        private async Task Rename()
+        {
+            Log.Instance.Logger.Info("Rename");
+
+            RenameWindow reWin = new RenameWindow();
+            reWin.Owner = MainWindow.Instance;
+            RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
+
+            if (reWin.ShowDialog() ?? false)
+            {
+                this.Barcode = setVM.InputBarcode;
+            }
+        }
     }
 }

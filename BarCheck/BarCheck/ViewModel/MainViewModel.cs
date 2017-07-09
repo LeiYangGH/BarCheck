@@ -323,10 +323,10 @@ namespace BarCheck.ViewModel
             }
         }
         //1
-        private bool isManualAdding;
+        private bool isRenameing;
         private RelayCommand manualAddCommand;
 
-        public RelayCommand ManualAddCommand
+        public RelayCommand RenameCommand
         {
             get
             {
@@ -334,23 +334,23 @@ namespace BarCheck.ViewModel
                   ?? (manualAddCommand = new RelayCommand(
                     async () =>
                     {
-                        if (isManualAdding)
+                        if (isRenameing)
                         {
                             return;
                         }
 
-                        isManualAdding = true;
-                        ManualAddCommand.RaiseCanExecuteChanged();
+                        isRenameing = true;
+                        RenameCommand.RaiseCanExecuteChanged();
 
-                        await ManualAdd();
+                        await Rename();
 
-                        isManualAdding = false;
-                        ManualAddCommand.RaiseCanExecuteChanged();
+                        isRenameing = false;
+                        RenameCommand.RaiseCanExecuteChanged();
                     },
-                    () => !isManualAdding));
+                    () => !isRenameing));
             }
         }
-        private async Task ManualAdd()
+        private async Task Rename()
         {
             Log.Instance.Logger.Info($"Manual add {this.HardwareBarcode}");
             this.GotBarcode(this.HardwareBarcode);
@@ -606,7 +606,7 @@ namespace BarCheck.ViewModel
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
-                    if (!isManualAdding)
+                    if (!isRenameing)
                         this.HardwareBarcode = barcode;
                     barcode = barcode.Trim();
                     AllBarcodeViewModel newAllVM = null;

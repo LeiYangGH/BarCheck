@@ -80,11 +80,15 @@
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="ListBoxBehavior.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="RenameWindow.xaml.cs">
+      <DependentUpon>RenameWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AllBarcodeViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\RenameViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">
@@ -99,6 +103,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SettingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
