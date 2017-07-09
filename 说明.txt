@@ -1,3 +1,4 @@
+test push nr branch
 test commit nr branch
 =============================
 条码报警参数设置
