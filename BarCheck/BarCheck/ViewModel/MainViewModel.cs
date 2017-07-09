@@ -455,21 +455,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-        private Dictionary<string, int> dicGradeProgress
-            = new Dictionary<string, int>()
-            {
-                { "A",100 },
-                { "B",83 },
-                { "C",66 },
-                { "D",50 },
-                { "E",33 },
-                { "F",16 },
-                { "-",0 },
-            };
-        private void SetBestProgress(string grade)
-        {
-            this.CurrentBestGrade = this.dicGradeProgress[grade];
-        }
+
 
         private bool ExportAllBarocdeTxt(string tabTxtFileName)
         {
@@ -627,11 +613,27 @@ namespace BarCheck.ViewModel
                     int oldCount = this.ObsAllBarcodes.Count;
 
                     if (barcode.ToUpper() == Constants.NR)
-                        newAllVM = new AllBarcodeViewModel(
-                            Constants.NR + DateTime.Now.ToString("ddmmssfff"), false, oldCount + 1);
+                    {
+                        barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
+                        newAllVM = new AllBarcodeViewModel(barcode, false, oldCount + 1);
+                    }
                     else
                         newAllVM = new AllBarcodeViewModel(barcode, true, oldCount + 1);
                     this.ObsAllBarcodes.Add(newAllVM);
+                    bool hasDup = false;
+                    for (int a = 0; a < oldCount; a++)
+                    {
+                        AllBarcodeViewModel aVM = this.ObsAllBarcodes[a];
+                        if (aVM.Barcode == barcode)
+                        {
+                            hasDup = true;
+                            aVM.HasDup = true;
+                        }
+                    }
+                    if (hasDup)
+                        newAllVM.HasDup = true;
+                    BarcodeHistory.Instance.AppendBarcode(newAllVM);
+
                 }));
         }
 

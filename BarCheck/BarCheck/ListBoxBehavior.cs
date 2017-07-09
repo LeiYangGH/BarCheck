@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace BarCheck
 {
-    public class ListBoxBehavior
+    public class ListBoxBehavior 
     {
         static readonly Dictionary<ListBox, Capture> Associations =
               new Dictionary<ListBox, Capture>();
@@ -83,6 +83,6 @@ namespace BarCheck
             Associations[listBox] = new Capture(listBox);
         }
 
-
+         
     }
 }

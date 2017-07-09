@@ -84,6 +84,22 @@ namespace BarCheck.ViewModel
             get;
         }
 
+        private bool hasDup;
+        public bool HasDup
+        {
+            get
+            {
+                return this.hasDup;
+            }
+            set
+            {
+                if (this.hasDup != value)
+                {
+                    this.hasDup = value;
+                    this.RaisePropertyChanged(nameof(HasDup));
+                }
+            }
+        }
 
     }
 }
