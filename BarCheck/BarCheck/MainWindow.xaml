@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:BarCheck"
         xmlns:cvt="clr-namespace:BarCheck.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
+        Title="标签百检工具" TextBlock.TextAlignment="Center" Height="600" Width="800"
+        Topmost="{Binding ElementName=chkTop, Path=IsChecked, Mode=OneWay}"
 		DataContext="{Binding Main, Source={StaticResource Locator}}"
+        KeyDown="Window_KeyDown"
+        Closing="Window_Closing"
 		>
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="BarcodeStyle">
@@ -16,49 +19,39 @@
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
         <cvt:Bool2YesNoConverter x:Key="B2YN"/>
         <cvt:Dup2ColorConverter x:Key="Dup2C"/>
+        <cvt:Bool2ColorConverter x:Key="B2C"/>
         <BooleanToVisibilityConverter x:Key="B2V"/>
         <DataTemplate x:Key="GradeTBar">
             <TextBlock Text="{Binding Barcode, Mode=OneTime}" FontSize="20"
-                       Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"/>
+                       Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"
+                       />
         </DataTemplate>
         <DataTemplate x:Key="GradeFBar">
-
             <TextBlock    FontSize="20">
-                            <Hyperlink   
-                                        Command="{Binding RenameCommand}">
-                                 <TextBlock  Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"  Text="{Binding Path=Barcode}"/>
-            </Hyperlink>
+                 <Hyperlink Command="{Binding RenameCommand}">
+                               <TextBlock  
+                                   Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"
+                                           Text="{Binding Path=Barcode}"/>
+                 </Hyperlink>
             </TextBlock>
         </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Menu Grid.ColumnSpan="2">
+        <Menu>
             <MenuItem Header="{Binding PortName,Mode=OneWay}" Focusable="False"></MenuItem>
             <MenuItem Header="运行" Command="{Binding OpenCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="停止" Command="{Binding CloseCommand}" IsEnabled="{Binding IsOpened, Mode=OneWay}"></MenuItem>
-            <MenuItem Header="从文件导入条码"   Command="{Binding Add10KCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+            <MenuItem Header="从文件导入条码"  Visibility="Collapsed" Command="{Binding Add10KCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="设置" Command="{Binding SetCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
         </Menu>
-        <Grid Grid.Row="1" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBox FontSize="20" HorizontalAlignment="Stretch" Text="{Binding HardwareBarcode,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
-                       Grid.Row="0" Grid.Column="0"/>
-            <Button Command="{Binding RenameCommand}"
-                Grid.Row="0" Grid.Column="1">手工输入</Button>
-        </Grid>
-
-        <ListBox Name="lstAll" Margin="2,1" Grid.Row="2" Grid.Column="0" 
+        <ListBox Name="lstAll" Margin="2,1" Grid.Row="1"
                  ItemsSource="{Binding ObsAllBarcodes,Mode=OneWay,IsAsync=True}" 
                  local:ListBoxBehavior.ScrollOnNewItem="True"
                  SelectedItem="{Binding SelectedAllBarcode,Mode=OneWayToSource}"
@@ -69,8 +62,8 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="15*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
@@ -87,18 +80,17 @@
                                 </Style>
                             </ContentPresenter.Style>
                         </ContentPresenter>
-                        <!--<TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Barcode,Mode=OneWay}"  Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}">
-                        </TextBlock>-->
-                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Grade,Mode=OneTime,Converter={StaticResource B2YN}}" >
-
+                        <TextBlock Style="{StaticResource BarcodeStyle}" 
+                                   Grid.Column="2" HorizontalAlignment="Center" 
+                                   Text="{Binding Grade,Mode=OneTime,Converter={StaticResource B2YN}}" 
+                                   Foreground="{Binding Grade, Converter={StaticResource B2C}}">
                         </TextBlock>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
-
-        <TextBox  Grid.Row="3"   IsReadOnly="True" HorizontalAlignment="Stretch"
-                  Text="{Binding Message,Mode=OneWay}"></TextBox>
+        <TextBox  Grid.Row="2"   IsReadOnly="True" HorizontalAlignment="Stretch"
+                  Text="{Binding Message,Mode=OneWay}"
+                  ></TextBox>
     </Grid>
 </Window>

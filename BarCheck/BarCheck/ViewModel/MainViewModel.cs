@@ -1,26 +1,23 @@
+using BarCheck.Properties;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Win32;
-using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Text;
-using System.Diagnostics;
-using BarCheck.Properties;
-using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
     public class MainViewModel : ViewModelBase, IDisposable
     {
-        //private SerialPort serialPort = new SerialPort("COM?", 9600);
-        private SerialPort serialPort = new SerialPort("COM?", 9600);//115200
-        private SerialPort aserialPort = new SerialPort("COM?", 9600);
+        private SerialPort serialPort = new SerialPort(Constants.ComUnknown, 9600);
+        private SerialPort aserialPort = new SerialPort(Constants.ComUnknown, 9600);
 
         public MainViewModel()
         {
@@ -72,23 +69,6 @@ namespace BarCheck.ViewModel
                 if (this.aserialPort.PortName != value)
                 {
                     this.aserialPort.PortName = value;
-                }
-            }
-        }
-
-        private string hardwareBarcode;
-        public string HardwareBarcode
-        {
-            get
-            {
-                return this.hardwareBarcode;
-            }
-            set
-            {
-                if (this.hardwareBarcode != value)
-                {
-                    this.hardwareBarcode = value;
-                    this.RaisePropertyChanged(nameof(HardwareBarcode));
                 }
             }
         }
@@ -239,7 +219,6 @@ namespace BarCheck.ViewModel
                     return;
                 this.aserialPort.Open();
                 Log.Instance.Logger.InfoFormat("open alarm {0} success", this.APortName);
-                this.Message = string.Format("成功打开报警串口{0}！", this.APortName);
                 if (this.aserialPort.IsOpen)
                 {
                     Settings.Default.APortName = this.APortName;
@@ -284,11 +263,8 @@ namespace BarCheck.ViewModel
         [HandleProcessCorruptedStateExceptions]
         private async Task Close()
         {
-            //App.Current.Dispatcher.BeginInvoke((Action)(delegate
-            //{
             this.CloseSerialPort();
             this.RaisePropertyChanged(nameof(IsOpened));
-            //}));
         }
 
         public void CloseSerialPort()
@@ -313,8 +289,6 @@ namespace BarCheck.ViewModel
             try
             {
                 Log.Instance.Logger.InfoFormat("close alarm {0} success", this.APortName);
-                this.Message = string.Format("成功关闭报警串口{0}！", this.APortName);
-
             }
             catch (Exception ex)
             {
@@ -322,40 +296,6 @@ namespace BarCheck.ViewModel
                 MessengerInstance.Send<string>(ex.Message);
             }
         }
-        //1
-        private bool isRenameing;
-        private RelayCommand manualAddCommand;
-
-        public RelayCommand RenameCommand
-        {
-            get
-            {
-                return manualAddCommand
-                  ?? (manualAddCommand = new RelayCommand(
-                    async () =>
-                    {
-                        if (isRenameing)
-                        {
-                            return;
-                        }
-
-                        isRenameing = true;
-                        RenameCommand.RaiseCanExecuteChanged();
-
-                        await Rename();
-
-                        isRenameing = false;
-                        RenameCommand.RaiseCanExecuteChanged();
-                    },
-                    () => !isRenameing));
-            }
-        }
-        private async Task Rename()
-        {
-            Log.Instance.Logger.Info($"Manual add {this.HardwareBarcode}");
-            this.GotBarcode(this.HardwareBarcode);
-        }
-        //2
 
         private bool isSeting;
         private RelayCommand setCommand;
@@ -389,8 +329,8 @@ namespace BarCheck.ViewModel
 
         private async Task Set()
         {
-            Log.Instance.Logger.Info("settings");
-
+            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs}");
+            Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
             setWin.Owner = MainWindow.Instance;
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
@@ -404,10 +344,9 @@ namespace BarCheck.ViewModel
                 this.PortName = setVM.SelectedPortName;
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
-
                 this.alarmMs = setVM.AlarmMs;
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs}");
             }
-
         }
 
         private bool isExporting;
@@ -457,16 +396,13 @@ namespace BarCheck.ViewModel
 
 
 
-        private bool ExportAllBarocdeTxt(string tabTxtFileName)
+        private bool ExportAllBarocdeTxt(string txtFileName)
         {
             try
             {
-                //string dir = Path.GetDirectoryName(tabTxtFileName);
-                //var allNotDeletedBarcodes = this.ObsAllBarcodes.Where(x => !x.Deleted).Select(x => x.Barcode).ToArray();
-                //string allFileName = Path.Combine(dir, "所有条码" + allNotDeletedBarcodes.Length.ToString() + ".txt");
-                //File.WriteAllLines(allFileName, allNotDeletedBarcodes);
-                //Log.Instance.Logger.Info(allFileName);
-                //this.Message = allFileName;
+                File.WriteAllLines(txtFileName, this.ObsAllBarcodes.Select(x => x.ToString()));
+                Log.Instance.Logger.Info($"export to {txtFileName}");
+                this.Message = txtFileName;
                 return true;
             }
             catch (Exception ex)
@@ -484,52 +420,6 @@ namespace BarCheck.ViewModel
             if (dlg.ShowDialog() ?? false)
             {
                 this.ExportAllBarocdeTxt(dlg.FileName);
-                this.ExportTabTxt(dlg.FileName);
-            }
-        }
-
-        private bool isAdd10King;
-        private RelayCommand add10KCommand;
-
-        public RelayCommand Add10KCommand
-        {
-            get
-            {
-                return add10KCommand
-                  ?? (add10KCommand = new RelayCommand(
-                    async () =>
-                    {
-                        if (isAdd10King)
-                        {
-                            return;
-                        }
-
-                        isAdd10King = true;
-                        Add10KCommand.RaiseCanExecuteChanged();
-
-                        await ImportBarcodesFromFile();
-
-                        isAdd10King = false;
-                        Add10KCommand.RaiseCanExecuteChanged();
-                    },
-                    () => !isAdd10King));
-            }
-        }
-
-        private async Task ImportBarcodesFromFile()
-        {
-            this.ObsAllBarcodes.Clear();
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "Text (*.txt)|*.txt";
-            if (dlg.ShowDialog() ?? false)
-            {
-                this.Message = "开始导入" + dlg.FileName;
-                string fileName = dlg.FileName;
-                foreach (string line in File.ReadLines(fileName))
-                {
-                    this.GotBarcode(line.Replace("\r", "").Replace("\n", ""));
-                }
-                this.Message = "结束导入" + dlg.FileName;
             }
         }
 
@@ -570,12 +460,12 @@ namespace BarCheck.ViewModel
         {
             try
             {
-                //byte[] bytes = StringToByteArray(s);
                 this.aserialPort.Write(bytes, 0, bytes.Length);
             }
             catch (Exception ex)
             {
                 Log.Instance.Logger.Error(ex.Message);
+                this.Message = ex.Message;
             }
         }
         private Guid latestG;
@@ -618,8 +508,6 @@ namespace BarCheck.ViewModel
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
-                    if (!isRenameing)
-                        this.HardwareBarcode = barcode;
                     barcode = barcode.Trim();
                     AllBarcodeViewModel newAllVM = null;
                     int oldCount = this.ObsAllBarcodes.Count;
@@ -649,14 +537,15 @@ namespace BarCheck.ViewModel
                         this.Alarm(Constants.Alarm2LightBytes);
                     }
                     BarcodeHistory.Instance.AppendBarcode(newAllVM);
-
                 }));
         }
 
         private Random rnd = new Random();
         public void AddRandomBarcode()
         {
-            string barcode = rnd.Next(10000, 10010).ToString().PadLeft(5, '0');
+            string barcode = rnd.Next(10000, 10010).ToString().PadLeft(12, '0');
+            if (rnd.Next(1, 3) == 2)
+                this.GotBarcode(Constants.NR);
             this.GotBarcode(barcode);
         }
 
@@ -678,7 +567,7 @@ namespace BarCheck.ViewModel
                     return names[0];
             }
             else
-                return "COM?";
+                return Constants.ComUnknown;
         }
 
         private string GetSecondPortName()
@@ -696,11 +585,11 @@ namespace BarCheck.ViewModel
                     if (except1.Any())
                         return except1.First();
                     else
-                        return "COM?";
+                        return Constants.ComUnknown;
                 }
             }
             else
-                return "COM?";
+                return Constants.ComUnknown;
         }
 
         public override void Cleanup()
@@ -718,7 +607,6 @@ namespace BarCheck.ViewModel
         }
         public void Dispose()
         {
-
             Dispose(true);
             GC.SuppressFinalize(this);
         }

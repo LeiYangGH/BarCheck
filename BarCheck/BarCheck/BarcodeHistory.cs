@@ -37,7 +37,7 @@ namespace BarCheck
         {
             try
             {
-                this.sw.WriteLine($"{allBarcodeVM.Barcode} { (allBarcodeVM.Grade?Constants.GradeYES:Constants.GradeNO)} {allBarcodeVM.Date.ToString("yyyyMMdd:HHmmss")} { (allBarcodeVM.HasDup ? Constants.Dup:"")}");
+                this.sw.WriteLine(allBarcodeVM);
             }
             catch (Exception ex)
             {

@@ -73,7 +73,6 @@ namespace BarCheck.ViewModel
             }
         }
 
-
         private ObservableCollection<string> obsSerialPortNames;
         public ObservableCollection<string> ObsSerialPortNames
         {
@@ -91,10 +90,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-
-
         string IDataErrorInfo.Error => this.duplicateError;
-
         string IDataErrorInfo.this[string columnName] => this.duplicateError;
     }
 }

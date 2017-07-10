@@ -67,18 +67,9 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
-                    ////MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
-                    //MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
-
-                    //if (!this.grade)
-                    //{
-                    //    mainVM.Alarm(Constants.Alarm1LightBytes);
-                    //}
                 }
             }
         }
-
-
 
         public DateTime Date
         {
@@ -144,6 +135,11 @@ namespace BarCheck.ViewModel
                 MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
                 mainVM.CheckDupAfterRename(this);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{Barcode} { (Grade ? Constants.GradeYES : Constants.GradeNO)} {Date.ToString("yyyyMMdd:HHmmss")} {(HasDup ? Constants.Dup : "")}";
         }
     }
 }

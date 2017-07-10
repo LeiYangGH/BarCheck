@@ -32,6 +32,38 @@ namespace BarCheck
               {
                   BarcodeHistory.Instance.Close();
               };
+            this.ShowVersion();
+            Log.Instance.Logger.Info("\r\nUI started!");
+        }
+
+        private void ShowVersion()
+        {
+            string version = System.Reflection.Assembly.GetExecutingAssembly()
+                                           .GetName()
+                                           .Version
+                                           .ToString();
+            this.Title += " -" + version;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.A)
+            {
+                this.mainVM.AddRandomBarcode();
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (this.mainVM.ObsAllBarcodes.Count > 0)
+            {
+                if (MessageBox.Show("真的要关闭吗?显示的数据会丢失", "关闭程序", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    Log.Instance.Logger.Info("UI closed!\r\n\r\n");
+                }
+                else
+                    e.Cancel = true;
+            }
         }
     }
 }
