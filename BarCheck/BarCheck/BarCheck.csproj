@@ -77,8 +77,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\Bool2ColorConverter.cs" />
     <Compile Include="Converters\Bool2YesNoConverter.cs" />
-    <Compile Include="Converters\Dup2ColorConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\Status2DescConverter.cs" />
     <Compile Include="ListBoxBehavior.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="RenameWindow.xaml.cs">
@@ -88,6 +88,7 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AllBarcodeViewModel.cs" />
+    <Compile Include="ViewModel\BarcodeStatus.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\RenameViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />

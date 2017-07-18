@@ -100,22 +100,22 @@ namespace BarCheck.ViewModel
 
         }
 
-        private AllBarcodeViewModel selectedAllBarcode;
-        public AllBarcodeViewModel SelectedAllBarcode
+        private AllBarcodeViewModel lastAllBarcode;
+        public AllBarcodeViewModel LastAllBarcode
         {
             get
             {
-                return this.selectedAllBarcode;
+                return this.lastAllBarcode;
             }
             set
             {
-                if (this.selectedAllBarcode != value)
+                if (this.lastAllBarcode != value)
                 {
-                    this.selectedAllBarcode = value;
+                    this.lastAllBarcode = value;
+                    this.RaisePropertyChanged(nameof(LastAllBarcode));
                 }
             }
         }
-
 
         private ObservableCollection<AllBarcodeViewModel> obsAllBarcodes;
         public ObservableCollection<AllBarcodeViewModel> ObsAllBarcodes
@@ -134,8 +134,29 @@ namespace BarCheck.ViewModel
             }
         }
 
+        public int GradeYesCount
+        {
+            get
+            {
+                return this.ObsAllBarcodes.Count(x => x.Status == BarcodeStatus.Yes);
+            }
+        }
 
+        public int GradeNoCount
+        {
+            get
+            {
+                return this.ObsAllBarcodes.Count(x => x.Status == BarcodeStatus.NO);
+            }
+        }
 
+        public int DupCount
+        {
+            get
+            {
+                return this.ObsAllBarcodes.Count(x => x.Status == BarcodeStatus.Dup);
+            }
+        }
 
         private string message;
         public string Message
@@ -473,11 +494,19 @@ namespace BarCheck.ViewModel
 
         public void Alarm(byte[] bytes)
         {
-            latestG = Guid.NewGuid();
-            Thread t = new Thread(() => AlarmFun(latestG, bytes));
-            t.IsBackground = true;
-            closeTime = DateTime.Now.AddMilliseconds(alarmMs);
-            t.Start();
+            try
+            {
+                latestG = Guid.NewGuid();
+                Thread t = new Thread(() => AlarmFun(latestG, bytes));
+                t.IsBackground = true;
+                closeTime = DateTime.Now.AddMilliseconds(alarmMs);
+                t.Start();
+            }
+            catch (Exception ex)
+            {
+                this.Message = ex.Message;
+            }
+
         }
         public void AlarmFun(Guid g, byte[] bytes)
         {
@@ -509,33 +538,27 @@ namespace BarCheck.ViewModel
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
                     barcode = barcode.Trim();
-                    AllBarcodeViewModel newAllVM = null;
+                    bool grade = true;
+                    bool dup = false;
                     int oldCount = this.ObsAllBarcodes.Count;
-
                     if (barcode.ToUpper() == Constants.NR)
                     {
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        newAllVM = new AllBarcodeViewModel(barcode, false, oldCount + 1);
+                        grade = false;
                         this.Alarm(Constants.Alarm1LightBytes);
                     }
-                    else
-                        newAllVM = new AllBarcodeViewModel(barcode, true, oldCount + 1);
-                    this.ObsAllBarcodes.Add(newAllVM);
-                    bool hasDup = false;
-                    for (int a = 0; a < oldCount; a++)
+                    if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
                     {
-                        AllBarcodeViewModel aVM = this.ObsAllBarcodes[a];
-                        if (aVM.Barcode == barcode)
-                        {
-                            hasDup = true;
-                            aVM.HasDup = true;
-                        }
-                    }
-                    if (hasDup)
-                    {
-                        newAllVM.HasDup = true;
+                        dup = true;
                         this.Alarm(Constants.Alarm2LightBytes);
                     }
+                    AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, grade, dup, oldCount + 1);
+                    this.ObsAllBarcodes.Add(newAllVM);
+
+                    this.RaisePropertyChanged(nameof(GradeYesCount));
+                    this.RaisePropertyChanged(nameof(GradeNoCount));
+                    this.RaisePropertyChanged(nameof(DupCount));
+                    this.LastAllBarcode = newAllVM;
                     BarcodeHistory.Instance.AppendBarcode(newAllVM);
                 }));
         }
@@ -544,9 +567,10 @@ namespace BarCheck.ViewModel
         public void AddRandomBarcode()
         {
             string barcode = rnd.Next(10000, 10010).ToString().PadLeft(12, '0');
-            if (rnd.Next(1, 3) == 2)
+            if (rnd.Next(1, 5) == 2)
                 this.GotBarcode(Constants.NR);
-            this.GotBarcode(barcode);
+            else
+                this.GotBarcode(barcode);
         }
 
         private void GetAlarmSettings()

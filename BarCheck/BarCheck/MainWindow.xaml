@@ -6,31 +6,46 @@
         xmlns:local="clr-namespace:BarCheck"
         xmlns:cvt="clr-namespace:BarCheck.Converters"
         mc:Ignorable="d"
-        Title="标签百检工具" TextBlock.TextAlignment="Center" Height="600" Width="800"
+        Title="条码检测系统" TextBlock.TextAlignment="Center" Height="600" Width="800"
         Topmost="{Binding ElementName=chkTop, Path=IsChecked, Mode=OneWay}"
 		DataContext="{Binding Main, Source={StaticResource Locator}}"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing"
 		>
     <Window.Resources>
+        <Style TargetType="Button" x:Key="RoundBtn">
+            <Style.Setters>
+                <Setter Property="Margin" Value="30"></Setter>
+                <Setter Property="Cursor" Value="Hand"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Ellipse Fill="{TemplateBinding Background}"></Ellipse>
+                                <ContentPresenter TextBlock.FontSize="20"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
         <Style TargetType="TextBlock" x:Key="BarcodeStyle">
-            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontSize" Value="15"/>
         </Style>
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
-        <cvt:Bool2YesNoConverter x:Key="B2YN"/>
-        <cvt:Dup2ColorConverter x:Key="Dup2C"/>
-        <cvt:Bool2ColorConverter x:Key="B2C"/>
         <BooleanToVisibilityConverter x:Key="B2V"/>
+        <cvt:Bool2YesNoConverter x:Key="B2YN"/>
+        <cvt:Bool2ColorConverter x:Key="B2C"/>
+        <cvt:Status2DescConverter x:Key="Status2D"/>
         <DataTemplate x:Key="GradeTBar">
             <TextBlock Text="{Binding Barcode, Mode=OneTime}" FontSize="20"
-                       Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"
                        />
         </DataTemplate>
         <DataTemplate x:Key="GradeFBar">
             <TextBlock    FontSize="20">
                  <Hyperlink Command="{Binding RenameCommand}">
                                <TextBlock  
-                                   Foreground="{Binding HasDup, Converter={StaticResource Dup2C}}"
                                            Text="{Binding Path=Barcode}"/>
                  </Hyperlink>
             </TextBlock>
@@ -43,52 +58,120 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="{Binding PortName,Mode=OneWay}" Focusable="False"></MenuItem>
-            <MenuItem Header="运行" Command="{Binding OpenCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
-            <MenuItem Header="停止" Command="{Binding CloseCommand}" IsEnabled="{Binding IsOpened, Mode=OneWay}"></MenuItem>
-            <MenuItem Header="从文件导入条码"  Visibility="Collapsed" Command="{Binding Add10KCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="设置" Command="{Binding SetCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
         </Menu>
-        <ListBox Name="lstAll" Margin="2,1" Grid.Row="1"
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <!--open close-->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Background="Green"  Style="{StaticResource RoundBtn}"
+                            Command="{Binding OpenCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}">
+                        运行
+                    </Button>
+                    <Button Grid.Column="1" 
+                            Background="Red"  Style="{StaticResource RoundBtn}"
+                            Command="{Binding CloseCommand}" IsEnabled="{Binding IsOpened, Mode=OneWay}">
+                        停止
+                    </Button>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <TextBlock Padding="40"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Text="{Binding LastAllBarcode.Grade, Converter={StaticResource B2YN},Mode=OneWay}"
+                        Background="{Binding LastAllBarcode.Grade, Converter={StaticResource B2C},Mode=OneWay}"
+                        MinWidth="50" MinHeight="30" Margin="30"  FontSize="30" ></TextBlock>
+                </Grid>
+            </Grid>
+            <GridSplitter HorizontalAlignment="Stretch"
+          ResizeDirection="Columns"
+          VerticalAlignment="Stretch" 
+          Grid.Column="1"    ResizeBehavior="PreviousAndNext"
+          Width="5" Background="#FFBCBCBC"/>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <ListBox Name="lstAll" Margin="2,1" Grid.Row="0"
                  ItemsSource="{Binding ObsAllBarcodes,Mode=OneWay,IsAsync=True}" 
                  local:ListBoxBehavior.ScrollOnNewItem="True"
-                 SelectedItem="{Binding SelectedAllBarcode,Mode=OneWayToSource}"
                  VirtualizingPanel.IsVirtualizing="true"
                  VirtualizingPanel.VirtualizationMode="Recycling" 
                   HorizontalContentAlignment="Stretch">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="15*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
-                        <ContentPresenter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="15*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
+                                <ContentPresenter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                           Content="{Binding Path=., Mode=OneWay}">
-                            <ContentPresenter.Style>
-                                <Style TargetType="ContentPresenter">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource GradeTBar}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Grade}" Value="False">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource GradeFBar}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentPresenter.Style>
-                        </ContentPresenter>
-                        <TextBlock Style="{StaticResource BarcodeStyle}" 
+                                    <ContentPresenter.Style>
+                                        <Style TargetType="ContentPresenter">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource GradeTBar}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Grade}" Value="False">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource GradeFBar}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentPresenter.Style>
+                                </ContentPresenter>
+                                <TextBlock Style="{StaticResource BarcodeStyle}" 
                                    Grid.Column="2" HorizontalAlignment="Center" 
-                                   Text="{Binding Grade,Mode=OneTime,Converter={StaticResource B2YN}}" 
-                                   Foreground="{Binding Grade, Converter={StaticResource B2C}}">
-                        </TextBlock>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                           Margin="2,0"
+                                   Text="{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2D}}" 
+                                   >
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource BarcodeStyle}" 
+                                           FontSize="15"
+                                   Grid.Column="3" HorizontalAlignment="Center" 
+                                   Text="{Binding Date, StringFormat=HH:mm:ss,Mode=OneTime}" 
+                                   >
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="合格数"  Grid.Column="0"/>
+                    <TextBlock Text="{Binding GradeYesCount, Mode=OneWay}" Grid.Column="1"/>
+                    <TextBlock Text="重码数" Grid.Column="2"/>
+                    <TextBlock Text="{Binding DupCount, Mode=OneWay}" Grid.Column="3"/>
+                    <TextBlock Text="不合格数" Grid.Column="4"/>
+                    <TextBlock Text="{Binding GradeNoCount, Mode=OneWay}" Grid.Column="5"/>
+                </Grid>
+            </Grid>
+
+        </Grid>
+
         <TextBox  Grid.Row="2"   IsReadOnly="True" HorizontalAlignment="Stretch"
                   Text="{Binding Message,Mode=OneWay}"
                   ></TextBox>
