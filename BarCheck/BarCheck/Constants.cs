@@ -24,6 +24,7 @@ namespace BarCheck
                 { BarcodeStatus.Yes,GradeYES },
             };
         public const string ComUnknown = "COM?";
+        public const string Users = "users";
         //0110001A000101CE18 声音1+闪光
         //0110001A0001040E1B 声音2+闪光
         //0110001A0001028E19 只有闪光

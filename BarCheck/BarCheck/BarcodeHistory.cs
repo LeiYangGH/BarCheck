@@ -27,7 +27,7 @@ namespace BarCheck
         {
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            this.fileName = Path.Combine(dir, $"Barcode_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt");
+            this.fileName = Path.Combine(dir, $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt");
             this.sw = new StreamWriter(this.fileName);
             this.sw.AutoFlush = true;
             Log.Instance.Logger.Info($"Created file:{this.fileName}");

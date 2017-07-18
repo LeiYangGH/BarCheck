@@ -11,6 +11,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BarCheck.ViewModel
 {
@@ -18,7 +19,7 @@ namespace BarCheck.ViewModel
     {
         private SerialPort serialPort = new SerialPort(Constants.ComUnknown, 9600);
         private SerialPort aserialPort = new SerialPort(Constants.ComUnknown, 9600);
-
+        public static string currentUserName;
         public MainViewModel()
         {
             this.serialPort.DataReceived += SerialPort_DataReceived;
@@ -96,6 +97,20 @@ namespace BarCheck.ViewModel
             get
             {
                 return this.serialPort.IsOpen;
+            }
+
+        }
+
+        public Visibility MFEVisible
+        {
+            get
+            {
+#if MFE
+                return Visibility.Collapsed;
+#else
+                return Visibility.Collapsed;
+#endif
+
             }
 
         }
@@ -518,18 +533,6 @@ namespace BarCheck.ViewModel
                 Thread.Sleep(50);
             }
             this.SendBytes(Constants.AlarmClose);
-        }
-
-        public void CheckDupAfterRename(AllBarcodeViewModel allVM)
-        {
-            var dups = this.ObsAllBarcodes.Where(x => x.Barcode == allVM.Barcode);
-            if (dups.Count() > 1)
-            {
-                this.Alarm(Constants.Alarm2LightBytes);
-                foreach (var avm in dups)
-                    avm.HasDup = true;
-            }
-
         }
 
         private void GotBarcode(string barcode)

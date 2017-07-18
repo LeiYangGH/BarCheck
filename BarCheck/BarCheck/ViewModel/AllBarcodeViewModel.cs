@@ -156,14 +156,12 @@ namespace BarCheck.ViewModel
             if (reWin.ShowDialog() ?? false)
             {
                 this.Barcode = setVM.InputBarcode;
-                MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
-                mainVM.CheckDupAfterRename(this);
             }
         }
 
         public override string ToString()
         {
-            return $"{Barcode} { (Grade ? Constants.GradeYES : Constants.GradeNO)} {Date.ToString("yyyyMMdd:HHmmss")} {(HasDup ? Constants.Dup : "")}";
+            return $"{Index} {Barcode} { Constants.dicStatusDesc[this.Status]} {Date.ToString("yyyyMMdd:HHmmss")}";
         }
     }
 }

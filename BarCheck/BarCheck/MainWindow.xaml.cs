@@ -34,6 +34,7 @@ namespace BarCheck
               };
             this.ShowVersion();
             Log.Instance.Logger.Info("\r\nUI started!");
+
         }
 
         private void ShowVersion()
@@ -63,6 +64,16 @@ namespace BarCheck
                 }
                 else
                     e.Cancel = true;
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoginWindow win = new LoginWindow();
+            win.Owner = this;
+            if (!(win.ShowDialog() ?? true))
+            {
+                this.Close();
             }
         }
     }
