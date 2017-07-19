@@ -108,7 +108,7 @@ namespace BarCheck.ViewModel
 #if MFE
                 return Visibility.Collapsed;
 #else
-                return Visibility.Collapsed;
+                return Visibility.Visible;
 #endif
 
             }
