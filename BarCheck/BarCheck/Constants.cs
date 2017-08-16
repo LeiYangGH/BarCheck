@@ -15,6 +15,8 @@ namespace BarCheck
         public const string NR = "NR";
         public const string GradeYES = "合格";
         public const string GradeNO = "不合格";
+        public const string PortOpen = "扫描串口已打开";
+        public const string PortClosed = "扫描串口已关闭";
         public const string Dup = "重复";
         public static readonly Dictionary<BarcodeStatus, string> dicStatusDesc
             = new Dictionary<BarcodeStatus, string>()

@@ -37,6 +37,7 @@
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
         <BooleanToVisibilityConverter x:Key="B2V"/>
         <cvt:Bool2YesNoConverter x:Key="B2YN"/>
+        <cvt:Open2MsgConverter x:Key="O2M"/>
         <cvt:Bool2ColorConverter x:Key="B2C"/>
         <cvt:Status2DescConverter x:Key="Status2D"/>
         <DataTemplate x:Key="GradeTBar">
@@ -73,6 +74,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid>
                     <!--open close-->
@@ -92,7 +94,11 @@
                         停止
                     </Button>
                 </Grid>
-                <Grid Grid.Row="1">
+                <TextBlock Grid.Row="1" 
+                           Text="{Binding IsOpened, Converter={StaticResource O2M},Mode=OneWay}">
+                    
+                </TextBlock>
+                <Grid Grid.Row="2">
                     <TextBlock Padding="40"
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         Text="{Binding LastAllBarcode.Grade, Converter={StaticResource B2YN},Mode=OneWay}"

@@ -535,6 +535,18 @@ namespace BarCheck.ViewModel
             this.SendBytes(Constants.AlarmClose);
         }
 
+        private DateTime lastGotBarcodeTime = DateTime.Now.AddDays(-1);
+
+        private bool IsMorethan2Seconds()
+        {
+            DateTime now = DateTime.Now;
+            TimeSpan span = now - lastGotBarcodeTime;
+            if (span.TotalMilliseconds >= 6000)
+                return true;
+            else
+                return false;
+        }
+
         private void GotBarcode(string barcode)
         {
             if (App.Current != null)//walkaround
@@ -546,14 +558,26 @@ namespace BarCheck.ViewModel
                     int oldCount = this.ObsAllBarcodes.Count;
                     if (barcode.ToUpper() == Constants.NR)
                     {
-                        barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        grade = false;
-                        this.Alarm(Constants.Alarm1LightBytes);
+                        if (IsMorethan2Seconds())
+                        {
+                            this.lastGotBarcodeTime = DateTime.Now;
+                            barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
+                            grade = false;
+                            this.Alarm(Constants.Alarm1LightBytes);
+                        }
+                        else
+                            return;
                     }
                     if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
                     {
-                        dup = true;
-                        this.Alarm(Constants.Alarm2LightBytes);
+                        if (IsMorethan2Seconds())
+                        {
+                            this.lastGotBarcodeTime = DateTime.Now;
+                            dup = true;
+                            this.Alarm(Constants.Alarm2LightBytes);
+                        }
+                        else
+                            return;
                     }
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, grade, dup, oldCount + 1);
                     this.ObsAllBarcodes.Add(newAllVM);

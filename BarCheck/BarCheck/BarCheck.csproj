@@ -78,6 +78,7 @@
     <Compile Include="Converters\Bool2ColorConverter.cs" />
     <Compile Include="Converters\Bool2YesNoConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\Open2MsgConverter.cs" />
     <Compile Include="Converters\Status2DescConverter.cs" />
     <Compile Include="ListBoxBehavior.cs" />
     <Compile Include="Log.cs" />
