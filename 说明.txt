@@ -1,3 +1,5 @@
+修改：登录后无开始停止按钮
+=============================
 增加登录功能
 管理员持有UsersGenerator文件夹，打开users.txt编辑用户和密码，然后运行UsersGenerator.exe生成加密的文件Users，并手工复制此文件到BarCheck.exe旁边
 登录界面功能实现，美工后面完善
