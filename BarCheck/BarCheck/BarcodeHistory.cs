@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BarCheck
 {
-    public class BarcodeHistory
+    public class BarcodeHistory : IDisposable
     {
         private static readonly Lazy<BarcodeHistory> lazy =
             new Lazy<BarcodeHistory>(() => new BarcodeHistory());
@@ -27,7 +27,7 @@ namespace BarCheck
         {
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            this.fileName = Path.Combine(dir, $"Barcode_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt");
+            this.fileName = Path.Combine(dir, $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt");
             this.sw = new StreamWriter(this.fileName);
             this.sw.AutoFlush = true;
             Log.Instance.Logger.Info($"Created file:{this.fileName}");
@@ -37,7 +37,7 @@ namespace BarCheck
         {
             try
             {
-                this.sw.WriteLine($"{allBarcodeVM.Barcode} { allBarcodeVM.Grade} {allBarcodeVM.Date.ToString("yyyyMMdd:HHmmss")}");
+                this.sw.WriteLine(allBarcodeVM);
             }
             catch (Exception ex)
             {
@@ -49,6 +49,21 @@ namespace BarCheck
         {
             this.sw.Close();
             Log.Instance.Logger.Info($"Closed file:{this.fileName}");
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.sw != null)
+                    this.sw.Dispose();
+            }
+        }
+        public void Dispose()
+        {
+
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding SettingsViewModel, Source={StaticResource Locator}}"
-        Title="选择串口" Height="300" Width="300">
+        Title="程序设置" Height="300" Width="300">
     <Window.Resources>
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
     </Window.Resources>
@@ -31,17 +31,16 @@
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*"/>
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="串口" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" Name="cboA"  Grid.Row="0" ItemsSource="{Binding ObsSerialPortNames,Mode=OneWay}"
+                        <ComboBox Grid.Column="1" Name="cboA"  Grid.Row="0" FontSize="20"
+                                  ItemsSource="{Binding ObsSerialPortNames,Mode=OneWay}"
                                    Text="{Binding SelectedAPortName,ValidatesOnDataErrors=true}"
-                  HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="100" FontSize="20">
+                  HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="100">
                             <ComboBox.Style>
                                 <Style TargetType="{x:Type ComboBox}">
                                     <Style.Triggers>
@@ -57,24 +56,18 @@
                         </ComboBox>
 
                         <TextBlock Text="报警持续时间(毫秒)" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Slider Name="sld"  Grid.Row="1" Grid.Column="1"
-                                Minimum="500" Maximum="10000" Height="10"
-                                HorizontalAlignment="Stretch" Margin="5,10" VerticalAlignment="Top"
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Slider Name="sld" Grid.Row="0"  
+                                Minimum="500" Maximum="5000" MinHeight="15"
+                                HorizontalAlignment="Stretch"  VerticalAlignment="Center"
                                 Value="{Binding AlarmMs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></Slider>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=sld,Path=Value,Mode=OneWay}"
-                                   VerticalAlignment="Bottom" HorizontalAlignment="Center" MinWidth="50" Margin="2,10"></TextBlock>
-
-                        <TextBlock Text="报警前先发送关闭指令" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <CheckBox  Grid.Row="2" Grid.Column="1" IsChecked="{Binding CloseBeforeAlarm}"
-                                  HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Center"
-                                  MinWidth="50"></CheckBox>
-
-                        <TextBlock Text="报警条码等级" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="3" Grid.Column="1"
-                                  ItemsSource="{Binding ObsGrades,Mode=OneWay}"
-                                   Text="{Binding AlarmGrade}"
-                                  HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Center"
-                                  MinWidth="50"></ComboBox>
+                            <TextBlock Grid.Row="1" Text="{Binding ElementName=sld,Path=Value,Mode=OneWay}"
+                                   VerticalAlignment="Top" HorizontalAlignment="Center" MinWidth="50"></TextBlock>
+                        </Grid>
                     </Grid>
                 </TabItem>
             </TabControl.Items>

@@ -49,18 +49,6 @@ namespace BarCheck.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D")]
-        public string AlarmGrade {
-            get {
-                return ((string)(this["AlarmGrade"]));
-            }
-            set {
-                this["AlarmGrade"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public int AlarmMs {
             get {
@@ -73,13 +61,13 @@ namespace BarCheck.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool CloseBeforeAlarm {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CurrentUser {
             get {
-                return ((bool)(this["CloseBeforeAlarm"]));
+                return ((string)(this["CurrentUser"]));
             }
             set {
-                this["CloseBeforeAlarm"] = value;
+                this["CurrentUser"] = value;
             }
         }
     }

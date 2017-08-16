@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using Microsoft.Practices.ServiceLocation;
 using System;
 using System.Collections.Generic;
@@ -10,22 +11,19 @@ namespace BarCheck.ViewModel
 {
     public class AllBarcodeViewModel : ViewModelBase
     {
-        public AllBarcodeViewModel(string barcodeWithGrade, int index)
+        public AllBarcodeViewModel(string barcode, bool grade, bool dup, int index)
         {
-            barcodeWithGrade = barcodeWithGrade.Trim();
-            if (barcodeWithGrade.Contains(Constants.GradeSplitString))
-            {
-                string[] ss = barcodeWithGrade.Split(new char[] { Constants.GradeSplitChar });
-                this.barcode = ss[0];
-                this.Grade = ss[1];
-            }
-            else
-            {
-                this.barcode = barcodeWithGrade;
-                this.Grade = Constants.GradeFailScanString;
-            }
+            this.barcode = barcode.Trim();
+            this.Grade = grade;
+            this.HasDup = dup;
             this.index = index;
             this.Date = DateTime.Now;
+            if (!this.Grade)
+                this.Status = BarcodeStatus.NO; //
+            else if (this.HasDup)
+                this.Status = BarcodeStatus.Dup; //
+            else
+                this.Status = BarcodeStatus.Yes; //
         }
 
         private int index;
@@ -63,8 +61,8 @@ namespace BarCheck.ViewModel
         }
 
 
-        private string grade;
-        public string Grade
+        private bool grade;
+        public bool Grade
         {
             get
             {
@@ -76,24 +74,94 @@ namespace BarCheck.ViewModel
                 {
                     this.grade = value;
                     this.RaisePropertyChanged(nameof(Grade));
-                    //MainViewModel mainVM = MainWindow.Instance.DataContext as MainViewModel;
-                    MainViewModel mainVM = ServiceLocator.Current.GetInstance<MainViewModel>();
-
-                    if (string.Compare(this.grade, mainVM.alarmGrade) >= 0)
-                    {
-                        mainVM.Alarm();
-                    }
                 }
             }
         }
 
-
+        public BarcodeStatus status;
+        public BarcodeStatus Status
+        {
+            get
+            {
+                return this.status;
+            }
+            set
+            {
+                if (this.status != value)
+                {
+                    this.status = value;
+                    this.RaisePropertyChanged(nameof(Status));
+                }
+            }
+        }
 
         public DateTime Date
         {
             get;
         }
 
+        private bool hasDup;
+        public bool HasDup
+        {
+            get
+            {
+                return this.hasDup;
+            }
+            set
+            {
+                if (this.hasDup != value)
+                {
+                    this.hasDup = value;
+                    this.RaisePropertyChanged(nameof(HasDup));
+                }
+            }
+        }
 
+        //1
+        private bool isRenameing;
+        private RelayCommand renameCommand;
+
+        public RelayCommand RenameCommand
+        {
+            get
+            {
+                return renameCommand
+                  ?? (renameCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isRenameing)
+                        {
+                            return;
+                        }
+
+                        isRenameing = true;
+                        RenameCommand.RaiseCanExecuteChanged();
+
+                        await Rename();
+
+                        isRenameing = false;
+                        RenameCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isRenameing));
+            }
+        }
+        private async Task Rename()
+        {
+            Log.Instance.Logger.Info("Rename");
+
+            RenameWindow reWin = new RenameWindow();
+            reWin.Owner = MainWindow.Instance;
+            RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
+
+            if (reWin.ShowDialog() ?? false)
+            {
+                this.Barcode = setVM.InputBarcode;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{Index} {Barcode} { Constants.dicStatusDesc[this.Status]} {Date.ToString("yyyyMMdd:HHmmss")}";
+        }
     }
 }
