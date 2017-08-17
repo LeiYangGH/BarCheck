@@ -101,9 +101,25 @@
                     
                 </TextBlock>
                 
-                <TextBlock Grid.Row="2" FontSize="20"
-                           Text="{Binding CurrentBarcode,Mode=OneWay}">
-
+                <TextBlock Grid.Row="2" FontSize="30"
+                           Text="{Binding CurrentBarcode,Mode=OneWay, NotifyOnTargetUpdated=True}"
+                           >
+                    <TextBlock.Foreground>
+                        <SolidColorBrush x:Name="MySolidColorBrush" Color="Black" />
+                    </TextBlock.Foreground>
+                    <TextBlock.Triggers>
+                        <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation 
+            Storyboard.TargetName="MySolidColorBrush"
+            Storyboard.TargetProperty="Color"
+            From="Black" To="White" Duration="0:0:2"
+            AutoReverse="False"  />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBlock.Triggers>
                 </TextBlock>
                 <Grid Grid.Row="3">
                     <TextBlock Padding="40"
