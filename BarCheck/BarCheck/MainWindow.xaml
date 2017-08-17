@@ -37,6 +37,7 @@
         </Style>
         <cvt:InverseBooleanConverter x:Key="InvBool"/>
         <BooleanToVisibilityConverter x:Key="B2V"/>
+        <cvt:IsRetryColorConverter x:Key="IsRetryC"/>
         <cvt:Bool2YesNoConverter x:Key="B2YN"/>
         <cvt:Open2MsgConverter x:Key="O2M"/>
         <cvt:Bool2ColorConverter x:Key="B2C"/>
@@ -100,9 +101,10 @@
                            Text="{Binding IsOpened, Converter={StaticResource O2M},Mode=OneWay}">
                     
                 </TextBlock>
-                
-                <TextBlock Grid.Row="2" FontSize="30"
-                           Text="{Binding CurrentBarcode,Mode=OneWay, NotifyOnTargetUpdated=True}"
+
+                <Border Grid.Row="2" BorderBrush="{Binding IsRetry, Converter={StaticResource IsRetryC},Mode=OneWay}" BorderThickness="2" >
+                <TextBlock  FontSize="30" VerticalAlignment="Center"
+                           Text="{Binding CurrentRawBarcode,Mode=OneWay, NotifyOnTargetUpdated=True}"
                            >
                     <TextBlock.Foreground>
                         <SolidColorBrush x:Name="MySolidColorBrush" Color="Black" />
@@ -121,6 +123,7 @@
                         </EventTrigger>
                     </TextBlock.Triggers>
                 </TextBlock>
+                </Border>
                 <Grid Grid.Row="3">
                     <TextBlock Padding="40"
                         HorizontalAlignment="Center" VerticalAlignment="Center"

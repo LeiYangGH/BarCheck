@@ -40,6 +40,8 @@ namespace BarCheck.ViewModel
             else
             {
             }
+
+
         }
 
 
@@ -101,12 +103,12 @@ namespace BarCheck.ViewModel
 
         }
 
-        private string currentBarcode;
-        public string CurrentBarcode
+        private string currentRawBarcode;
+        public string CurrentRawBarcode
         {
             get
             {
-                return this.currentBarcode;
+                return this.currentRawBarcode;
             }
 
         }
@@ -569,61 +571,58 @@ namespace BarCheck.ViewModel
             this.SendBytes(Constants.AlarmClose);
         }
 
-        private DateTime lastGotBarcodeTime = DateTime.Now.AddDays(-1);
-
-        private bool IsMorethan2Seconds()
-        {
-            DateTime now = DateTime.Now;
-            TimeSpan span = now - lastGotBarcodeTime;
-            if (span.TotalMilliseconds >= 2000)
-                return true;
-            else
-                return false;
-        }
-
         private int NRTimes = 0;
 
-        //private Timer RetryTimer = new Timer((x) =>
-        //{
-
-        //}, null, 0, 2000);
-
-
+        bool anotherBarcodeWithin2Seconds = false;
+        private Timer RetryTimer;
         public void GotBarcode(string barcode)
         {
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke((Action)(delegate
                 {
+                    anotherBarcodeWithin2Seconds = true;
                     barcode = barcode.Trim();
-                    this.currentBarcode = barcode;
-                    this.RaisePropertyChanged(nameof(CurrentBarcode));//
+                    this.currentRawBarcode = barcode;
+                    this.RaisePropertyChanged(nameof(CurrentRawBarcode));
                     bool grade = true;
                     bool dup = false;
                     int oldCount = this.ObsAllBarcodes.Count;
                     if (barcode.ToUpper() == Constants.NR)
                     {
+                        barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
+                        grade = false;
                         this.Alarm(Constants.Alarm1LightBytes);
                         this.IsRetry = true;
                         this.NRTimes++;
                         if (this.NRTimes >= 3)
                         {
-                            if (IsMorethan2Seconds())
-                            {
-                                barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                                grade = false;
-                            }
-                            else
-                            {
-                                this.lastGotBarcodeTime = DateTime.Now;
-                                return;
-                            }
+                            if (this.RetryTimer != null && anotherBarcodeWithin2Seconds == true)
+                                this.RetryTimer.Dispose();
+
+                            anotherBarcodeWithin2Seconds = false;
+
+                            this.RetryTimer = new Timer((x) =>
+                          {
+                              App.Current.Dispatcher.BeginInvoke((Action)(delegate
+                              {
+                                  if (!anotherBarcodeWithin2Seconds)
+                                  {
+                                      AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
+                                          barcode,
+                                          grade, false, oldCount + 1);
+                                      this.ObsAllBarcodes.Add(nrAllVM);
+                                      //Console.WriteLine($"*****timer{barcode}*********");
+                                      this.RaisePropertyChanged(nameof(GradeNoCount));
+                                      this.LastAllBarcode = nrAllVM;
+                                      BarcodeHistory.Instance.AppendBarcode(nrAllVM);
+                                      this.IsRetry = false;
+                                      this.NRTimes = 0;
+                                  }
+                              }));
+                          }, null, 2000, 0);
                         }
-                        else
-                        {
-                            this.lastGotBarcodeTime = DateTime.Now;
-                            return;
-                        }
-                    }
+                        return;
+                    }//NR
                     else if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
                     {
                         this.Alarm(Constants.Alarm2LightBytes);
@@ -639,9 +638,8 @@ namespace BarCheck.ViewModel
                     }
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, grade, dup, oldCount + 1);
                     this.ObsAllBarcodes.Add(newAllVM);
-
+                    //Console.WriteLine($"*****main{barcode}*********");
                     this.RaisePropertyChanged(nameof(GradeYesCount));
-                    this.RaisePropertyChanged(nameof(GradeNoCount));
                     this.RaisePropertyChanged(nameof(DupCount));
                     this.LastAllBarcode = newAllVM;
                     BarcodeHistory.Instance.AppendBarcode(newAllVM);

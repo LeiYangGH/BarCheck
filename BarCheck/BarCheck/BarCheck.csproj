@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MFE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MFE;RULE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MFE1;RULE1</DefineConstants>
+    <DefineConstants>TRACE;MFE1;RULE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -80,6 +80,7 @@
     <Compile Include="Converters\Bool2ColorConverter.cs" />
     <Compile Include="Converters\Bool2YesNoConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\IsRetryColorConverter.cs" />
     <Compile Include="Converters\Open2MsgConverter.cs" />
     <Compile Include="Converters\Status2DescConverter.cs" />
     <Compile Include="ListBoxBehavior.cs" />
