@@ -70,5 +70,17 @@ namespace BarCheck.Properties {
                 this["CurrentUser"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ExportDir {
+            get {
+                return ((string)(this["ExportDir"]));
+            }
+            set {
+                this["ExportDir"] = value;
+            }
+        }
     }
 }

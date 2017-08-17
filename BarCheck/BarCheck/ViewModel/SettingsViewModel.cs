@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,23 @@ namespace BarCheck.ViewModel
         public SettingsViewModel()
         {
             this.obsSerialPortNames = new ObservableCollection<string>(SerialPort.GetPortNames());
+        }
+
+        private string exportDir;
+        public string ExportDir
+        {
+            get
+            {
+                return this.exportDir;
+            }
+            set
+            {
+                if (this.exportDir != value)
+                {
+                    this.exportDir = value;
+                    this.RaisePropertyChanged(nameof(ExportDir));
+                }
+            }
         }
 
         private string selectedPortName;
@@ -89,6 +107,44 @@ namespace BarCheck.ViewModel
                 }
             }
         }
+
+        private bool isBrowseing;
+        private RelayCommand browseCommand;
+
+        public RelayCommand BrowseCommand
+        {
+            get
+            {
+                return browseCommand
+                  ?? (browseCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isBrowseing)
+                        {
+                            return;
+                        }
+
+                        isBrowseing = true;
+                        BrowseCommand.RaiseCanExecuteChanged();
+
+                        await Browse();
+
+                        isBrowseing = false;
+                        BrowseCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isBrowseing));
+            }
+        }
+
+        private async Task Browse()
+        {
+            System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.ExportDir = dlg.SelectedPath;
+            }
+        }
+
 
         string IDataErrorInfo.Error => this.duplicateError;
         string IDataErrorInfo.this[string columnName] => this.duplicateError;

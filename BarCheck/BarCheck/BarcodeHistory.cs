@@ -23,11 +23,21 @@ namespace BarCheck
             }
         }
 
+        private string generatedExportTxtName;
+        public string GeneratedExportTxtName
+        {
+            get
+            {
+                return this.generatedExportTxtName;
+            }
+        }
+
         private BarcodeHistory()
         {
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            this.fileName = Path.Combine(dir, $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt");
+            this.generatedExportTxtName = $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt";
+            this.fileName = Path.Combine(dir, this.GeneratedExportTxtName);
             this.sw = new StreamWriter(this.fileName);
             this.sw.AutoFlush = true;
             Log.Instance.Logger.Info($"Created file:{this.fileName}");

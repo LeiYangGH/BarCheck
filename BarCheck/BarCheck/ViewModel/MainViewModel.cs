@@ -29,7 +29,7 @@ namespace BarCheck.ViewModel
 #else
             this.PortName = this.GetFirstPortName();
             this.APortName = this.GetSecondPortName();
-            this.GetAlarmSettings();
+            this.GetOtherSettings();
 #endif
             this.obsAllBarcodes = new ObservableCollection<AllBarcodeViewModel>();
 
@@ -110,6 +110,24 @@ namespace BarCheck.ViewModel
             }
 
         }
+
+        private string exportDir;
+        public string ExportDir
+        {
+            get
+            {
+                return this.exportDir;
+            }
+            set
+            {
+                if (this.exportDir != value)
+                {
+                    this.exportDir = value;
+                    this.RaisePropertyChanged(nameof(ExportDir));
+                }
+            }
+        }
+
 
         public Visibility MFEVisible
         {
@@ -382,8 +400,8 @@ namespace BarCheck.ViewModel
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
             setVM.SelectedAPortName = this.APortName;
-
             setVM.AlarmMs = this.alarmMs;
+            setVM.ExportDir = this.ExportDir;
 
             if (setWin.ShowDialog() ?? false)
             {
@@ -391,7 +409,10 @@ namespace BarCheck.ViewModel
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
                 this.alarmMs = setVM.AlarmMs;
-                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs}");
+                this.ExportDir = setVM.ExportDir;
+                Settings.Default.ExportDir = ExportDir;
+                Settings.Default.Save();
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}");
             }
         }
 
@@ -461,11 +482,14 @@ namespace BarCheck.ViewModel
 
         private async Task Export()
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "Text (*.txt)|*.txt";
-            if (dlg.ShowDialog() ?? false)
+            if (Directory.Exists(this.ExportDir))
             {
-                this.ExportAllBarocdeTxt(dlg.FileName);
+                string fileName = Path.Combine(this.ExportDir, BarcodeHistory.Instance.GeneratedExportTxtName);
+                this.ExportAllBarocdeTxt(fileName);
+            }
+            else
+            {
+                MessageBox.Show("请先到设置里选择导出路径！");
             }
         }
 
@@ -636,9 +660,10 @@ namespace BarCheck.ViewModel
                 this.GotBarcode(barcode);
         }
 
-        private void GetAlarmSettings()
+        private void GetOtherSettings()
         {
             this.alarmMs = Settings.Default.AlarmMs;
+            this.ExportDir = Settings.Default.ExportDir;
         }
 
         private string GetFirstPortName()
