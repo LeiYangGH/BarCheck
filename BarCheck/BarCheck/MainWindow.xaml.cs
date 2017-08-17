@@ -45,17 +45,49 @@ namespace BarCheck
                                            .ToString();
             this.Title += " -" + version;
         }
+#if MFE
+        int currentIndex = 0;
+        List<string> lstBarcodes = new List<string>()
+        {
+            "B000000000001",
+            "NR",
+            "NR",
+            "NR",
+            "NR",
+            "B000000000003",
+            "B000000000003",
+            "NR",
+            "NR",
+            "NR",
+            "B000000000004",
+            "B000000000005",
+            "B000000000005",
+            "B000000000005",
+            "B000000000006",
+            "B000000000006",
+            "B000000000006",
+            "Z111111111111"
+        };
+#endif
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+#if MFE
             if (e.Key == Key.A)
             {
-                this.mainVM.AddRandomBarcode();
+                if (this.currentIndex < this.lstBarcodes.Count)
+                    this.mainVM.GotBarcode(this.lstBarcodes[this.currentIndex++]);
+                else
+                    this.mainVM.AddRandomBarcode();
             }
+#endif
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+#if MFE
+            return;
+#else
             if (this.mainVM.ObsAllBarcodes.Count > 0)
             {
                 if (MessageBox.Show("真的要关闭吗?显示的数据会丢失", "关闭程序", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
@@ -65,16 +97,21 @@ namespace BarCheck
                 else
                     e.Cancel = true;
             }
+#endif
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+#if MFE
+            return;
+#else
             LoginWindow win = new LoginWindow();
             win.Owner = this;
             if (!(win.ShowDialog() ?? true))
             {
                 this.Close();
             }
+#endif
         }
     }
 }

@@ -22,7 +22,8 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Grid>
-                                <Ellipse Fill="{TemplateBinding Background}"></Ellipse>
+                                <Ellipse Fill="{TemplateBinding Background}"
+                                         Width="85" Height="85"></Ellipse>
                                 <ContentPresenter TextBlock.FontSize="20"
                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Grid>
@@ -75,6 +76,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid>
                     <!--open close-->
@@ -98,7 +100,12 @@
                            Text="{Binding IsOpened, Converter={StaticResource O2M},Mode=OneWay}">
                     
                 </TextBlock>
-                <Grid Grid.Row="2">
+                
+                <TextBlock Grid.Row="2" FontSize="20"
+                           Text="{Binding CurrentBarcode,Mode=OneWay}">
+
+                </TextBlock>
+                <Grid Grid.Row="3">
                     <TextBlock Padding="40"
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         Text="{Binding LastAllBarcode.Grade, Converter={StaticResource B2YN},Mode=OneWay}"

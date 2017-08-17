@@ -2,6 +2,7 @@
 using BarCheck.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -35,7 +36,7 @@ namespace BarCheck
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string name = this.txtU.Text.Trim();
-            string pwd = this.txtP.Password;
+            string pwd = this.txtP.Text;
             string pwdh = User.GetPasswordHash(pwd);
             User u = this.lstUsers.FirstOrDefault(x =>
                x.Name == name
@@ -52,6 +53,10 @@ namespace BarCheck
             {
                 Log.Instance.Logger.Info($"{name} login failed");
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
