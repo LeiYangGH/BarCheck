@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
@@ -103,6 +104,7 @@ namespace BarCheck.ViewModel
 
         }
 
+
         private string currentRawBarcode;
         public string CurrentRawBarcode
         {
@@ -110,7 +112,15 @@ namespace BarCheck.ViewModel
             {
                 return this.currentRawBarcode;
             }
-
+            set
+            {
+                //not use if continuous NR
+                //if (this.currentRawBarcode != value)
+                {
+                    this.currentRawBarcode = value;
+                    this.RaisePropertyChanged(nameof(CurrentRawBarcode));
+                }
+            }
         }
 
         private string exportDir;
@@ -536,7 +546,7 @@ namespace BarCheck.ViewModel
             }
             catch (Exception ex)
             {
-                Log.Instance.Logger.Error(ex.Message);
+                //Log.Instance.Logger.Error(ex.Message);
                 this.Message = ex.Message;
             }
         }
@@ -572,9 +582,8 @@ namespace BarCheck.ViewModel
         }
 
         private int NRTimes = 0;
-
         bool anotherBarcodeWithin2Seconds = false;
-        private Timer RetryTimer;
+        private RegisteredWaitHandle registeredWaitHandle;
         public void GotBarcode(string barcode)
         {
             if (App.Current != null)//walkaround
@@ -582,44 +591,45 @@ namespace BarCheck.ViewModel
                 {
                     anotherBarcodeWithin2Seconds = true;
                     barcode = barcode.Trim();
-                    this.currentRawBarcode = barcode;
-                    this.RaisePropertyChanged(nameof(CurrentRawBarcode));
-                    bool grade = true;
+                    this.CurrentRawBarcode = barcode;
                     bool dup = false;
                     int oldCount = this.ObsAllBarcodes.Count;
                     if (barcode.ToUpper() == Constants.NR)
                     {
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        grade = false;
                         this.Alarm(Constants.Alarm1LightBytes);
                         this.IsRetry = true;
                         this.NRTimes++;
                         if (this.NRTimes >= 3)
                         {
-                            if (this.RetryTimer != null && anotherBarcodeWithin2Seconds == true)
-                                this.RetryTimer.Dispose();
+                            if (this.registeredWaitHandle != null && anotherBarcodeWithin2Seconds == true)
+                                this.registeredWaitHandle.Unregister(null);
 
                             anotherBarcodeWithin2Seconds = false;
 
-                            this.RetryTimer = new Timer((x) =>
-                          {
-                              App.Current.Dispatcher.BeginInvoke((Action)(delegate
-                              {
-                                  if (!anotherBarcodeWithin2Seconds)
-                                  {
-                                      AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
-                                          barcode,
-                                          grade, false, oldCount + 1);
-                                      this.ObsAllBarcodes.Add(nrAllVM);
-                                      //Console.WriteLine($"*****timer{barcode}*********");
-                                      this.RaisePropertyChanged(nameof(GradeNoCount));
-                                      this.LastAllBarcode = nrAllVM;
-                                      BarcodeHistory.Instance.AppendBarcode(nrAllVM);
-                                      this.IsRetry = false;
-                                      this.NRTimes = 0;
-                                  }
-                              }));
-                          }, null, 2000, 0);
+                            this.registeredWaitHandle = ThreadPool.RegisterWaitForSingleObject(
+                                new AutoResetEvent(false),
+                                (state, bTimeout) =>
+                                {
+                                    App.Current.Dispatcher.BeginInvoke((Action)(delegate
+                                    {
+                                        if (!anotherBarcodeWithin2Seconds)
+                                        {
+                                            AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
+                                                barcode,
+                                                false, false, oldCount + 1);
+                                            this.ObsAllBarcodes.Add(nrAllVM);
+                                            Debug.WriteLine($"*****timer{barcode}*********");
+                                            this.RaisePropertyChanged(nameof(GradeNoCount));
+                                            this.LastAllBarcode = nrAllVM;
+                                            BarcodeHistory.Instance.AppendBarcode(nrAllVM);
+                                            this.IsRetry = false;
+                                            this.NRTimes = 0;
+                                        }
+                                    }));
+                                },
+                                null,
+                                TimeSpan.FromSeconds(2), true);
                         }
                         return;
                     }//NR
@@ -636,9 +646,9 @@ namespace BarCheck.ViewModel
                             dup = true;
                         }
                     }
-                    AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, grade, dup, oldCount + 1);
+                    AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, true, dup, oldCount + 1);
                     this.ObsAllBarcodes.Add(newAllVM);
-                    //Console.WriteLine($"*****main{barcode}*********");
+                    Debug.WriteLine($"*****main{barcode}*********");
                     this.RaisePropertyChanged(nameof(GradeYesCount));
                     this.RaisePropertyChanged(nameof(DupCount));
                     this.LastAllBarcode = newAllVM;

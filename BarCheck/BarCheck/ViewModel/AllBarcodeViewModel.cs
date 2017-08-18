@@ -11,14 +11,14 @@ namespace BarCheck.ViewModel
 {
     public class AllBarcodeViewModel : ViewModelBase
     {
-        public AllBarcodeViewModel(string barcode, bool grade, bool dup, int index)
+        public AllBarcodeViewModel(string barcode, bool valid, bool dup, int index)
         {
             this.barcode = barcode.Trim();
-            this.Grade = grade;
+            this.Valid = valid;
             this.HasDup = dup;
             this.index = index;
             this.Date = DateTime.Now;
-            if (!this.Grade)
+            if (!this.Valid)
                 this.Status = BarcodeStatus.NO; //
             else if (this.HasDup)
                 this.Status = BarcodeStatus.Dup; //
@@ -62,7 +62,7 @@ namespace BarCheck.ViewModel
 
 
         private bool grade;
-        public bool Grade
+        public bool Valid
         {
             get
             {
@@ -73,7 +73,7 @@ namespace BarCheck.ViewModel
                 if (this.grade != value)
                 {
                     this.grade = value;
-                    this.RaisePropertyChanged(nameof(Grade));
+                    this.RaisePropertyChanged(nameof(Valid));
                 }
             }
         }
