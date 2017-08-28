@@ -9,16 +9,25 @@ SetCompressorDictSize 32
 !define MUI_ICON "seim.ico";
 
 
-InstallDir "$PROGRAMFILES\BarCheck"
+InstallDir "C:\BarCheck"
 
 OutFile "BarCheck_install.exe"
 
+
+
 Section "x" SEC01
-SectionIn RO 
+
+SectionIn RO
+  SetOutPath "$INSTDIR\Wav"
+  SetOverwrite on
+  File "Releases\Wav\*"
+ 
   SetOutPath "$INSTDIR"
   SetOverwrite on
-File "说明.txt"
+#File "说明.txt"
 File "seim.ico"
-File "Releases\BarCheck.exe"
+File "Releases\*"
 CreateShortCut "$DESKTOP\BarCheck.lnk" "$INSTDIR\BarCheck.exe" "" "$INSTDIR\seim.ico"
 SectionEnd
+
+
