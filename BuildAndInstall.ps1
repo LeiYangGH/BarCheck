@@ -20,6 +20,7 @@ cd 'C:\Program Files (x86)\NSIS'
 $installout = "$BarDir\BarCheck_install.exe"
 $installzipdir = "$BarDir\BarCheck_install"
 Remove-Item "$installzipdir\*" -Force
+Copy-Item "$BarDir\说明.txt" $installzipdir -Force
 Copy-Item $installout $installzipdir  -Force
 
 cd $BarDir
