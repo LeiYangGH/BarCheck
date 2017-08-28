@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Media;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
@@ -553,6 +554,23 @@ namespace BarCheck.ViewModel
         private Guid latestG;
         private DateTime closeTime;
 
+        private SoundPlayer player = new SoundPlayer();
+        private bool soundFinished = true;
+        public void PlaySound(string soundFullName)
+        {
+            this.player.SoundLocation = soundFullName;
+            if (soundFinished)
+            {
+                soundFinished = false;
+                Task.Factory.StartNew(() =>
+                {
+                    player.PlaySync();
+                    soundFinished = true;
+                });
+            }
+        }
+
+
         public void Alarm(byte[] bytes)
         {
             try
@@ -597,7 +615,8 @@ namespace BarCheck.ViewModel
                     if (barcode.ToUpper() == Constants.NR)
                     {
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        this.Alarm(Constants.Alarm1LightBytes);
+                        //this.Alarm(Constants.Alarm1LightBytes);
+                        this.PlaySound(Constants.sndNR);
                         this.IsRetry = true;
                         this.NRTimes++;
                         if (this.NRTimes >= 3)
@@ -635,7 +654,8 @@ namespace BarCheck.ViewModel
                     }//NR
                     else if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
                     {
-                        this.Alarm(Constants.Alarm2LightBytes);
+                        //this.Alarm(Constants.Alarm2LightBytes);
+                        this.PlaySound(Constants.sndDup);
                         if (barcode == this.ObsAllBarcodes[oldCount - 1].Barcode)
                         {
                             this.IsRetry = true;
