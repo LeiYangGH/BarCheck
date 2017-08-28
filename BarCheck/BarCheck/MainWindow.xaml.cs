@@ -45,7 +45,7 @@ namespace BarCheck
                                            .ToString();
             this.Title += " -" + version;
         }
-#if RULE
+#if A
         int currentIndex = 0;
         List<string> lstBarcodes = new List<string>()
         {
@@ -74,7 +74,7 @@ namespace BarCheck
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-#if RULE
+#if A
             if (e.Key == Key.A)
             {
 
