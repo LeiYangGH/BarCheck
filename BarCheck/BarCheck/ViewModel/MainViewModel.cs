@@ -659,6 +659,7 @@ namespace BarCheck.ViewModel
                         if (barcode == this.ObsAllBarcodes[oldCount - 1].Barcode)
                         {
                             this.IsRetry = true;
+                            this.NRTimes = 0;
                             return;
                         }
                         else
