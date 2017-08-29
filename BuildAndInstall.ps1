@@ -5,7 +5,11 @@
    [System.IO.Compression.ZipFile]::CreateFromDirectory($sourcedir,$zipfilename)
 }
 $BarDir = 'C:\G\BarCheck'
-cd 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin'
+$MSBuildDir = 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin'
+If (-not (Test-Path $zipfile)){
+	$MSBuildDir = 'E:\VS17\MSBuild\15.0\Bin'
+}
+cd $MSBuildDir
 .\msbuild "$BarDir\BarCheck\BarCheck\BarCheck.csproj" /p:Configuration=Release /p:DefineConstants="A" /t:Rebuild
 
 $dt = [DateTime]::Now.ToString("yyyyMMddHHmm") 
