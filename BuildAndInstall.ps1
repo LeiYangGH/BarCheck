@@ -6,14 +6,15 @@
 }
 $BarDir = 'C:\G\BarCheck'
 cd 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin'
-.\msbuild "$BarDir\BarCheck\BarCheck\BarCheck.csproj" /p:Configuration=Release /p:DefineConstants="MFE1" /p:DefineConstants="A" /t:Rebuild
+.\msbuild "$BarDir\BarCheck\BarCheck\BarCheck.csproj" /p:Configuration=Release /p:DefineConstants="A" /t:Rebuild
 
 $dt = [DateTime]::Now.ToString("yyyyMMddHHmm") 
-$zipdir ="$BarDir\Releases"
+$makefromdir ="$BarDir\Releases"
 $debugdir = "$BarDir\BarCheck\BarCheck\bin\Release"
 $exclude = @('*.pdb','*.xml','*vshost*','*.log')
-Copy-Item "$debugdir\*" $zipdir -Recurse -Exclude $exclude -Force
-Copy-Item "$BarDir\说明.txt" $zipdir -Force
+Remove-Item "$makefromdir\*" -Recurse -Force
+Copy-Item "$debugdir\*" $makefromdir -Recurse -Exclude $exclude -Force
+Copy-Item "$BarDir\说明.txt" $makefromdir -Force
 
 cd 'C:\Program Files (x86)\NSIS'
 .\makensis.exe "$BarDir\BarCheck.nsi"
