@@ -44,5 +44,8 @@ If (Test-Path $zipfile){
 	Remove-Item $zipfile -Force
 }
 $zipfile
+
+if ($error.Count > 0){
 Read-Host
+}
 

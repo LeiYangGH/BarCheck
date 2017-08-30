@@ -1,3 +1,11 @@
+        public static readonly byte[] LightAllOn = { 0x55, 0x01, 0x02, 0x03, 0x04, 0xEE };
+        public static readonly byte[] LightAllOff = { 0x55, 0xF1, 0xF2, 0xF3, 0xF4, 0xEE };
+        public static readonly byte[] LightOK = { 0x55, 0x01, 0xF2, 0x03, 0xF4, 0xEE };
+        public static readonly byte[] LightDup = { 0x55, 0x01, 0x02, 0xF3, 0x04, 0xEE };
+        public static readonly byte[] LightNR = { 0x55, 0xF1, 0x02, 0xF3, 0x04, 0xEE };
+=============================
+修复：互换灯光开和关的序列
+=============================
 支持新灯光串口
 正常、重复、NR记录时分别开灯光，两秒（可设置）自动关闭
 =============================
