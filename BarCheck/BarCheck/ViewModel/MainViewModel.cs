@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Media;
 using System.Runtime.ExceptionServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -428,6 +430,88 @@ namespace BarCheck.ViewModel
                 Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}");
             }
         }
+
+
+        //import--
+        private bool isImporting;
+        private RelayCommand importCommand;
+
+        public RelayCommand ImportCommand
+        {
+            get
+            {
+                return importCommand
+                  ?? (importCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isImporting)
+                        {
+                            return;
+                        }
+
+                        isImporting = true;
+                        ImportCommand.RaiseCanExecuteChanged();
+
+                        await ImportBarcodesFromFile();
+
+                        isImporting = false;
+                        ImportCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isImporting));
+            }
+        }
+
+        private List<Tuple<string, int>> dicImport;
+        private async Task ImportBarcodesFromFile()
+        {
+            this.ObsAllBarcodes.Clear();
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "Text (*.txt)|*.txt";
+            this.dicImport = new List<Tuple<string, int>>();
+            //{
+            //     Tuple.Create<string,int>( "B111",1000 ),
+            //     Tuple.Create<string,int>( "B112",1000 ),
+            //     Tuple.Create<string,int>( "B111",1000 ),
+            //     Tuple.Create<string,int>( "NR",500 ),
+            //     Tuple.Create<string,int>( "NR",500 ),
+            //     Tuple.Create<string,int>( "NR",1200 ),
+            //     Tuple.Create<string,int>( "B113",1000 ),
+            //};
+            if (dlg.ShowDialog() ?? false)
+            {
+                this.Message = "开始导入" + dlg.FileName;
+                string fileName = dlg.FileName;
+                Regex reg = new Regex(@"([A-Z0-9]{2,20})\s+(\d{2,4})", RegexOptions.Compiled);
+                foreach (string line in File.ReadLines(fileName, Encoding.Default))
+                {
+                    if (reg.IsMatch(line))
+                    {
+                        this.dicImport.Add(Tuple.Create<string, int>(reg.Match(line).Groups[1].Value,
+                            Convert.ToInt32(reg.Match(line).Groups[2].Value)));
+                    }
+                    else
+                    {
+                        MessageBox.Show($"【{line}】不符合规定的格式(2~20个大写字母和数字为条码，2-4个数字为毫秒)");
+                        return;
+                    }
+
+                }
+                this.Message = "结束导入" + dlg.FileName;
+                Thread t = new Thread(this.ImportFun);
+                t.Start();
+            }
+        }
+
+        private void ImportFun()
+        {
+            foreach (var kv in this.dicImport)
+            {
+                this.GotBarcode(kv.Item1);
+                Thread.Sleep(kv.Item2);
+            }
+        }
+        //--import
+
 
         private bool isExporting;
         private RelayCommand exportCommand;

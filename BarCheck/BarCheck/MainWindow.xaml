@@ -63,6 +63,7 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="设置" Command="{Binding SetCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
+            <MenuItem Header="导入" Command="{Binding ImportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
         </Menu>
