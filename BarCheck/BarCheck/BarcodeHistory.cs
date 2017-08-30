@@ -13,7 +13,7 @@ namespace BarCheck
         private static readonly Lazy<BarcodeHistory> lazy =
             new Lazy<BarcodeHistory>(() => new BarcodeHistory());
         private StreamWriter sw;
-        private string dir = Path.Combine(Environment.CurrentDirectory, "BarcodeHistory");
+        private string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"BarCheck\BarcodeHistory");
         private string fileName;
         public static BarcodeHistory Instance
         {

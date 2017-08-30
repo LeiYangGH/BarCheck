@@ -15,11 +15,10 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <local:UCBytes Grid.Row="0" BytesText="0110001A000101CE18"/>
-        <local:UCBytes Grid.Row="1" BytesText="0110001A0001040E1B"/>
-        <local:UCBytes Grid.Row="2" BytesText="0110001A0001028E19"/>
-        <local:UCBytes Grid.Row="3" BytesText="0110001A0001034FD9"/>
-        <local:UCBytes Grid.Row="4" BytesText="0110001A000105CFDB"/>
-        <local:UCBytes Grid.Row="5" BytesText="0110001A0001000FD8"/>
+        <local:UCBytes Grid.Row="0" BytesText="55F1F2F3F4EE"/>
+        <local:UCBytes Grid.Row="1" BytesText="5501020304EE"/>
+        <local:UCBytes Grid.Row="2" BytesText="550102F3F4EE"/>
+        <local:UCBytes Grid.Row="3" BytesText="55F1020304EE"/>
+        <local:UCBytes Grid.Row="4" BytesText="55F1F20304EE"/>
     </Grid>
 </Window>

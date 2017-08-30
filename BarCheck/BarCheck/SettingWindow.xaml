@@ -26,7 +26,7 @@
                         </ComboBox>
                     </Grid>
                 </TabItem>
-                <TabItem Header="报警串口">
+                <TabItem Header="灯光串口">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -55,7 +55,7 @@
 
                         </ComboBox>
 
-                        <TextBlock Text="报警持续时间(毫秒)" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="灯光持续时间(毫秒)" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*"/>

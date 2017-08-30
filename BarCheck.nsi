@@ -9,7 +9,7 @@ SetCompressorDictSize 32
 !define MUI_ICON "seim.ico";
 
 
-InstallDir "C:\BarCheck"
+InstallDir "$PROGRAMFILES64\BarCheck"
 
 OutFile "BarCheck_install.exe"
 

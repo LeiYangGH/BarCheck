@@ -21,7 +21,7 @@ namespace UsersFactory
         {
             if (!File.Exists(fileName))
                 return new List<User>();
-            FileStream fs = new FileStream(fileName, FileMode.Open);
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             BinaryFormatter formatter = new BinaryFormatter();
             try
             {

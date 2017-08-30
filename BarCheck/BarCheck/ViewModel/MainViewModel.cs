@@ -571,12 +571,12 @@ namespace BarCheck.ViewModel
         }
 
 
-        public void Alarm(byte[] bytes)
+        public void Light(byte[] bytes)
         {
             try
             {
                 latestG = Guid.NewGuid();
-                Thread t = new Thread(() => AlarmFun(latestG, bytes));
+                Thread t = new Thread(() => LightFun(latestG, bytes));
                 t.IsBackground = true;
                 closeTime = DateTime.Now.AddMilliseconds(alarmMs);
                 t.Start();
@@ -587,7 +587,7 @@ namespace BarCheck.ViewModel
             }
 
         }
-        public void AlarmFun(Guid g, byte[] bytes)
+        public void LightFun(Guid g, byte[] bytes)
         {
             this.SendBytes(bytes);
             while (DateTime.Now < closeTime)
@@ -596,7 +596,7 @@ namespace BarCheck.ViewModel
                     return;
                 Thread.Sleep(50);
             }
-            this.SendBytes(Constants.AlarmClose);
+            this.SendBytes(Constants.LightAllOff);
         }
 
         private int NRTimes = 0;
@@ -615,7 +615,6 @@ namespace BarCheck.ViewModel
                     if (barcode.ToUpper() == Constants.NR)
                     {
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        //this.Alarm(Constants.Alarm1LightBytes);
                         this.IsRetry = true;
                         this.NRTimes++;
                         if (this.NRTimes >= 3)
@@ -633,6 +632,7 @@ namespace BarCheck.ViewModel
                                     {
                                         if (!anotherBarcodeWithin2Seconds)
                                         {
+                                            this.Light(Constants.LightNR);
                                             AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
                                                 barcode,
                                                 false, false, oldCount + 1);
@@ -653,7 +653,6 @@ namespace BarCheck.ViewModel
                     }//NR
                     else if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
                     {
-                        //this.Alarm(Constants.Alarm2LightBytes);
                         if (barcode == this.ObsAllBarcodes[oldCount - 1].Barcode)
                         {
                             this.IsRetry = true;
@@ -666,9 +665,15 @@ namespace BarCheck.ViewModel
                         }
                     }
                     if (dup)
+                    {
                         this.PlaySound(Constants.sndNR);
+                        this.Light(Constants.LightDup);
+                    }
                     else
+                    {
                         this.PlaySound(Constants.sndDup);
+                        this.Light(Constants.LightOK);
+                    }
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, true, dup, oldCount + 1);
                     this.ObsAllBarcodes.Add(newAllVM);
                     Debug.WriteLine($"*****main{barcode}*********");
