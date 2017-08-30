@@ -647,7 +647,7 @@ namespace BarCheck.ViewModel
                                     }));
                                 },
                                 null,
-                                TimeSpan.FromSeconds(2), true);
+                                TimeSpan.FromSeconds(1), true);
                         }
                         return;
                     }//NR

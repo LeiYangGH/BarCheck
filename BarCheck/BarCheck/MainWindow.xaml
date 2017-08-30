@@ -117,7 +117,7 @@
                                             <ColorAnimation 
             Storyboard.TargetName="MySolidColorBrush"
             Storyboard.TargetProperty="Color"
-            From="Black" To="White" Duration="0:0:2"
+            From="Black" To="White" Duration="0:0:1"
             AutoReverse="False"  />
                                         </Storyboard>
                                     </BeginStoryboard>
