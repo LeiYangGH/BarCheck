@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:BarCheck.Views"
+                    xmlns:cvt="clr-namespace:BarCheck.Converters"
+                    >
+    <BooleanToVisibilityConverter x:Key="B2V"/>
+    <cvt:InverseBooleanConverter x:Key="InvBool"/>
+    <cvt:IsRetryColorConverter x:Key="IsRetryC"/>
+    <cvt:Open2MsgConverter x:Key="O2M"/>
+    <cvt:Status2BrushConverter x:Key="Status2BrushCvt"/>
+    <cvt:Status2DescConverter x:Key="Status2DescCvt"/>
+
+</ResourceDictionary>

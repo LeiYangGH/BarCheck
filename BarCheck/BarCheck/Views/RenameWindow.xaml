@@ -10,7 +10,6 @@
         mc:Ignorable="d"
         Title="手工补码" Height="300" Width="300">
     <Window.Resources>
-        <cvt:InverseBooleanConverter x:Key="InvBool"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -22,7 +21,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="请输入条码" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="请输入条码" Style="{StaticResource CenterTextBlock}"/>
         <TextBox Name="txtBar" Grid.Row="1"    Grid.ColumnSpan="2" FontSize="20" MaxLength="20"
                                 HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Center"
                                 Text="{Binding InputBarcode,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=true}">
@@ -41,7 +40,7 @@
                 IsEnabled="{Binding ElementName=txtBar,Path=(Validation.HasError),Converter={StaticResource InvBool}}"
                 Content="确定" Click="btnOK_Click" 
                  HorizontalAlignment="Right" VerticalAlignment="Center"
-                MinWidth="80" FontSize="18">
+                MinWidth="80" FontSize="20">
         </Button>
 
     </Grid>

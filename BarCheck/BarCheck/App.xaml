@@ -3,7 +3,9 @@
         <ResourceDictionary>
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:BarCheck.ViewModel" />
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Views/DictionaryText.xaml" />
                 <ResourceDictionary Source="Views/DictionaryRoundButton.xaml" />
+                <ResourceDictionary Source="Views/DictionaryConverters.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -14,25 +14,15 @@
         Closing="Window_Closing"
 		>
     <Window.Resources>
-        <Style TargetType="TextBlock" x:Key="BarcodeStyle">
-            <Setter Property="FontSize" Value="15"/>
-        </Style>
-        <cvt:InverseBooleanConverter x:Key="InvBool"/>
-        <BooleanToVisibilityConverter x:Key="B2V"/>
-        <cvt:IsRetryColorConverter x:Key="IsRetryC"/>
-        <cvt:Bool2YesNoConverter x:Key="B2YN"/>
-        <cvt:Open2MsgConverter x:Key="O2M"/>
-        <cvt:Bool2ColorConverter x:Key="B2C"/>
-        <cvt:Status2DescConverter x:Key="Status2D"/>
         <DataTemplate x:Key="GradeTBar">
             <TextBlock Text="{Binding Barcode, Mode=OneTime}" FontSize="20"
                        />
         </DataTemplate>
         <DataTemplate x:Key="GradeFBar">
-            <TextBlock    FontSize="20">
+            <TextBlock    FontSize="18">
                  <Hyperlink Command="{Binding RenameCommand}">
                                <TextBlock  
-                                           Text="{Binding Path=Barcode}"/>
+                                Text="{Binding Path=Barcode}"/>
                  </Hyperlink>
             </TextBlock>
         </DataTemplate>
@@ -85,7 +75,7 @@
 
                 <Border Grid.Row="2" BorderBrush="{Binding IsRetry, Converter={StaticResource IsRetryC},Mode=OneWay}" BorderThickness="2" >
                     <Viewbox>
-                        <TextBlock  FontSize="30" VerticalAlignment="Center"
+                        <TextBlock  FontSize="30" Style="{StaticResource CenterTextBlock}"
                            Text="{Binding CurrentRawBarcode,Mode=OneWay, NotifyOnTargetUpdated=True}"
                            >
                             <TextBlock.Foreground>
@@ -109,9 +99,9 @@
                 </Border>
                 <Grid Grid.Row="3">
                     <TextBlock Padding="40"
-                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Text="{Binding LastAllBarcode.Valid, Converter={StaticResource B2YN},Mode=OneWay}"
-                        Background="{Binding LastAllBarcode.Valid, Converter={StaticResource B2C},Mode=OneWay}"
+                        Style="{StaticResource CenterTextBlock}"
+                        Text="{Binding Path=LastAllBarcode.Status,Mode=OneWay,Converter={StaticResource Status2DescCvt}}"
+                        Background= "{Binding Path=LastAllBarcode.Status,Mode=OneWay,Converter={StaticResource Status2BrushCvt}}"
                         MinWidth="50" MinHeight="30" Margin="30"  FontSize="30" ></TextBlock>
                 </Grid>
             </Grid>
@@ -120,7 +110,7 @@
           VerticalAlignment="Stretch" 
           Grid.Column="1"    ResizeBehavior="PreviousAndNext"
           Width="5" Background="#FFBCBCBC"/>
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" >
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="auto"/>
@@ -133,14 +123,15 @@
                   HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid ShowGridLines="False">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="15*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="10*"/>
+                                    <ColumnDefinition Width="15*" />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="5*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Style="{StaticResource BarcodeStyle}" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
+                                <TextBlock Style="{StaticResource CenterTextBlock}"
+                                    FontSize="15" Grid.Column="0" HorizontalAlignment="Right" Text="{Binding Index,Mode=OneTime}"/>
                                 <ContentPresenter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                           Content="{Binding Path=., Mode=OneWay}">
                                     <ContentPresenter.Style>
@@ -154,15 +145,15 @@
                                         </Style>
                                     </ContentPresenter.Style>
                                 </ContentPresenter>
-                                <TextBlock Style="{StaticResource BarcodeStyle}" 
-                                   Grid.Column="2" HorizontalAlignment="Center" 
+                                <TextBlock 
+                                   Grid.Column="2" Style="{StaticResource CenterTextBlock}" 
                                            Margin="2,0"
-                                   Text="{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2D}}" 
+                                   Text="{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2DescCvt}}"
+                                   Foreground= "{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2BrushCvt}}"
                                    >
                                 </TextBlock>
-                                <TextBlock Style="{StaticResource BarcodeStyle}" 
-                                           FontSize="15"
-                                   Grid.Column="3" HorizontalAlignment="Center" 
+                                <TextBlock FontSize="15"
+                                   Grid.Column="3" Style="{StaticResource CenterTextBlock}"
                                    Text="{Binding Date, StringFormat=HH:mm:ss,Mode=OneTime}" 
                                    >
                                 </TextBlock>

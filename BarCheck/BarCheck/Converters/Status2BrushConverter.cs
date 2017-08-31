@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BarCheck.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,12 +11,12 @@ using System.Windows.Media;
 namespace BarCheck.Converters
 {
     [ValueConversion(typeof(bool), typeof(Brush))]
-    public class Bool2ColorConverter : IValueConverter
+    public class Status2BrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool b = (bool)value;
-            return b ? Brushes.Green : Brushes.Red;
+            BarcodeStatus status = (BarcodeStatus)value;
+            return Constants.dicStatusBrush[status];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

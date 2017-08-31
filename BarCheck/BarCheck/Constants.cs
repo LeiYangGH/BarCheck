@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace BarCheck
 {
@@ -27,6 +28,13 @@ namespace BarCheck
                 { BarcodeStatus.NO,GradeNO },
                 { BarcodeStatus.Dup,Dup },
                 { BarcodeStatus.Yes,GradeYES },
+            };
+        public static readonly Dictionary<BarcodeStatus, SolidColorBrush> dicStatusBrush
+            = new Dictionary<BarcodeStatus, SolidColorBrush>()
+            {
+                        { BarcodeStatus.NO,Brushes.Red },
+                        { BarcodeStatus.Dup,Brushes.Orange },
+                        { BarcodeStatus.Yes,Brushes.Green },
             };
         public const string ComUnknown = "COM?";
         public const string Users = "users";
