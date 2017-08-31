@@ -140,12 +140,12 @@ namespace BarCheck.ViewModel
         {
             await Task.Run(() =>
             {
-                System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    this.ExportDir = dlg.SelectedPath;
-                }
             });
+            System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.ExportDir = dlg.SelectedPath;
+            }
         }
 
 

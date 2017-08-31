@@ -148,17 +148,17 @@ namespace BarCheck.ViewModel
         {
             await Task.Run(() =>
             {
-                Log.Instance.Logger.Info("Rename");
-
-                RenameWindow reWin = new RenameWindow();
-                reWin.Owner = MainWindow.Instance;
-                RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
-
-                if (reWin.ShowDialog() ?? false)
-                {
-                    this.Barcode = setVM.InputBarcode;
-                }
             });
+            Log.Instance.Logger.Info("Rename");
+
+            RenameWindow reWin = new RenameWindow();
+            reWin.Owner = MainWindow.Instance;
+            RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
+
+            if (reWin.ShowDialog() ?? false)
+            {
+                this.Barcode = setVM.InputBarcode;
+            }
         }
 
         public override string ToString()

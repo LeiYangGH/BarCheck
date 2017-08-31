@@ -334,10 +334,9 @@ namespace BarCheck.ViewModel
         {
             await Task.Run(() =>
             {
-                this.CloseSerialPort();
-                this.RaisePropertyChanged(nameof(IsOpened));
             });
-
+            this.CloseSerialPort();
+            this.RaisePropertyChanged(nameof(IsOpened));
         }
 
         public void CloseSerialPort()
@@ -464,43 +463,44 @@ namespace BarCheck.ViewModel
         {
             await Task.Run(() =>
             {
-                this.ObsAllBarcodes.Clear();
-                OpenFileDialog dlg = new OpenFileDialog();
-                dlg.Filter = "Text (*.txt)|*.txt";
-                this.dicImport = new List<Tuple<string, int>>();
-                //{
-                //     Tuple.Create<string,int>( "B111",1000 ),
-                //     Tuple.Create<string,int>( "B112",1000 ),
-                //     Tuple.Create<string,int>( "B111",1000 ),
-                //     Tuple.Create<string,int>( "NR",500 ),
-                //     Tuple.Create<string,int>( "NR",500 ),
-                //     Tuple.Create<string,int>( "NR",1200 ),
-                //     Tuple.Create<string,int>( "B113",1000 ),
-                //};
-                if (dlg.ShowDialog() ?? false)
-                {
-                    this.Message = "开始导入" + dlg.FileName;
-                    string fileName = dlg.FileName;
-                    Regex reg = new Regex(@"([A-Z0-9]{2,20})\s+(\d{2,4})", RegexOptions.Compiled);
-                    foreach (string line in File.ReadLines(fileName, Encoding.Default))
-                    {
-                        if (reg.IsMatch(line))
-                        {
-                            this.dicImport.Add(Tuple.Create<string, int>(reg.Match(line).Groups[1].Value,
-                                Convert.ToInt32(reg.Match(line).Groups[2].Value)));
-                        }
-                        else
-                        {
-                            MessageBox.Show($"【{line}】不符合规定的格式(2~20个大写字母和数字为条码，2-4个数字为毫秒)");
-                            return;
-                        }
 
-                    }
-                    this.Message = "结束导入" + dlg.FileName;
-                    Thread t = new Thread(this.ImportFun);
-                    t.Start();
-                }
             });
+            this.ObsAllBarcodes.Clear();
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "Text (*.txt)|*.txt";
+            this.dicImport = new List<Tuple<string, int>>();
+            //{
+            //     Tuple.Create<string,int>( "B111",1000 ),
+            //     Tuple.Create<string,int>( "B112",1000 ),
+            //     Tuple.Create<string,int>( "B111",1000 ),
+            //     Tuple.Create<string,int>( "NR",500 ),
+            //     Tuple.Create<string,int>( "NR",500 ),
+            //     Tuple.Create<string,int>( "NR",1200 ),
+            //     Tuple.Create<string,int>( "B113",1000 ),
+            //};
+            if (dlg.ShowDialog() ?? false)
+            {
+                this.Message = "开始导入" + dlg.FileName;
+                string fileName = dlg.FileName;
+                Regex reg = new Regex(@"([A-Z0-9]{2,20})\s+(\d{2,4})", RegexOptions.Compiled);
+                foreach (string line in File.ReadLines(fileName, Encoding.Default))
+                {
+                    if (reg.IsMatch(line))
+                    {
+                        this.dicImport.Add(Tuple.Create<string, int>(reg.Match(line).Groups[1].Value,
+                            Convert.ToInt32(reg.Match(line).Groups[2].Value)));
+                    }
+                    else
+                    {
+                        MessageBox.Show($"【{line}】不符合规定的格式(2~20个大写字母和数字为条码，2-4个数字为毫秒)");
+                        return;
+                    }
+
+                }
+                this.Message = "结束导入" + dlg.FileName;
+                Thread t = new Thread(this.ImportFun);
+                t.Start();
+            }
 
         }
 
@@ -582,16 +582,16 @@ namespace BarCheck.ViewModel
         {
             await Task.Run(() =>
             {
-                if (Directory.Exists(this.ExportDir))
-                {
-                    string fileName = Path.Combine(this.ExportDir, BarcodeHistory.Instance.GeneratedExportTxtName);
-                    this.ExportAllBarocdeTxt(fileName);
-                }
-                else
-                {
-                    MessageBox.Show("请先到设置里选择导出路径！");
-                }
             });
+            if (Directory.Exists(this.ExportDir))
+            {
+                string fileName = Path.Combine(this.ExportDir, BarcodeHistory.Instance.GeneratedExportTxtName);
+                this.ExportAllBarocdeTxt(fileName);
+            }
+            else
+            {
+                MessageBox.Show("请先到设置里选择导出路径！");
+            }
         }
 
 
