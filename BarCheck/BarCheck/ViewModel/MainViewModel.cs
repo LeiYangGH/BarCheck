@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using BarCheck.Views;
 
 namespace BarCheck.ViewModel
 {

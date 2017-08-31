@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace BarCheck
+namespace BarCheck.Views
 {
     /// <summary>
-    /// Interaction logic for SettingWindow.xaml
+    /// RenameWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class SettingWindow : Window
+    public partial class RenameWindow : Window
     {
-        public SettingWindow()
+        public RenameWindow()
         {
             InitializeComponent();
         }
