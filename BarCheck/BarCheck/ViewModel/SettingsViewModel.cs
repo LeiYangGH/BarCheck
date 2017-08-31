@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
-    public class SettingsViewModel : ViewModelBase, IDataErrorInfo
+    public sealed class SettingsViewModel : ViewModelBase, IDataErrorInfo
     {
         public SettingsViewModel()
         {
@@ -138,11 +138,14 @@ namespace BarCheck.ViewModel
 
         private async Task Browse()
         {
-            System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            await Task.Run(() =>
             {
-                this.ExportDir = dlg.SelectedPath;
-            }
+                System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
+                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    this.ExportDir = dlg.SelectedPath;
+                }
+            });
         }
 
 

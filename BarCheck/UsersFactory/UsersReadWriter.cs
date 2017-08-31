@@ -27,7 +27,7 @@ namespace UsersFactory
             {
                 return (List<User>)formatter.Deserialize(fs);
             }
-            catch (Exception ex)
+            catch
             {
                 return new List<User>();
             }
@@ -45,7 +45,7 @@ namespace UsersFactory
             {
                 formatter.Serialize(fs, lst);
             }
-            catch (Exception ex)
+            catch
             {
 
             }

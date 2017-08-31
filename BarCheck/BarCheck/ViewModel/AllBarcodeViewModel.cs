@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
-    public class AllBarcodeViewModel : ViewModelBase
+    public sealed class AllBarcodeViewModel : ViewModelBase
     {
         public AllBarcodeViewModel(string barcode, bool valid, bool dup, int index)
         {
@@ -117,7 +117,6 @@ namespace BarCheck.ViewModel
             }
         }
 
-        //1
         private bool isRenameing;
         private RelayCommand renameCommand;
 
@@ -147,16 +146,19 @@ namespace BarCheck.ViewModel
         }
         private async Task Rename()
         {
-            Log.Instance.Logger.Info("Rename");
-
-            RenameWindow reWin = new RenameWindow();
-            reWin.Owner = MainWindow.Instance;
-            RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
-
-            if (reWin.ShowDialog() ?? false)
+            await Task.Run(() =>
             {
-                this.Barcode = setVM.InputBarcode;
-            }
+                Log.Instance.Logger.Info("Rename");
+
+                RenameWindow reWin = new RenameWindow();
+                reWin.Owner = MainWindow.Instance;
+                RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
+
+                if (reWin.ShowDialog() ?? false)
+                {
+                    this.Barcode = setVM.InputBarcode;
+                }
+            });
         }
 
         public override string ToString()

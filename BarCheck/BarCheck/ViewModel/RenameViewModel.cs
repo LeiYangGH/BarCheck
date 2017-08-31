@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
-    public class RenameViewModel : ViewModelBase, IDataErrorInfo
+    public sealed class RenameViewModel : ViewModelBase, IDataErrorInfo
     {
         public RenameViewModel()
         {

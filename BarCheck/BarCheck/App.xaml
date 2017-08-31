@@ -9,8 +9,6 @@
             <Color x:Key="DisabledForegroundColor">#FFBFBFBF</Color>
             <Color x:Key="ControlPressedColor">#FF211AA9</Color>
 
-            <!-- FocusVisual -->
-
             <Style x:Key="ButtonFocusVisual">
                 <Setter Property="Control.Template">
                     <Setter.Value>
@@ -28,8 +26,6 @@
                 <Setter Property="SnapsToDevicePixels" Value="true" />
                 <Setter Property="OverridesDefaultStyle" Value="true" />
                 <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}" />
-                <Setter Property="MinHeight" Value="29px" />
-                <Setter Property="MinWidth"  Value="103px" />
                 <Setter Property="Foreground" Value="#FFFFFFFF" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -76,8 +72,8 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-
                                 <ContentPresenter Margin="2"
+                            TextBlock.FontSize="30"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             RecognizesAccessKey="True" />
