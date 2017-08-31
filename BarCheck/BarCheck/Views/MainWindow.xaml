@@ -147,7 +147,7 @@
                                 </ContentPresenter>
                                 <TextBlock 
                                    Grid.Column="2" Style="{StaticResource CenterTextBlock}" 
-                                           Margin="2,0"
+                                           Margin="2,0" FontWeight="Bold"
                                    Text="{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2DescCvt}}"
                                    Foreground= "{Binding Path=Status,Mode=OneTime,Converter={StaticResource Status2BrushCvt}}"
                                    >

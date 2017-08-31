@@ -25,7 +25,7 @@
             <TextBlock Text="用户名:" Style="{StaticResource CenterTextBlock}"></TextBlock>
             <TextBlock Text="密码:" Style="{StaticResource CenterTextBlock}"
                        Grid.Row="1"></TextBlock>
-            <TextBox Name="txtU" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource CenterTextBox}"></TextBox>
+            <TextBox Name="txtU" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center"></TextBox>
             <WindowsFormsHost Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center">
                 <wf:TextBox x:Name="txtP" PasswordChar="*"/>
             </WindowsFormsHost>
