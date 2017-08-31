@@ -18,6 +18,7 @@ namespace BarCheck
         public const string PortOpen = "扫描串口已打开";
         public const string PortClosed = "扫描串口已关闭";
         public const string Dup = "重复";
+        public const string sndOK = @"Wav\OK.wav";
         public const string sndNR = @"Wav\NR.wav";
         public const string sndDup = @"Wav\DUP.wav";
         public static readonly Dictionary<BarcodeStatus, string> dicStatusDesc

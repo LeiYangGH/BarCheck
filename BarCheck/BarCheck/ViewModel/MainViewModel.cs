@@ -144,20 +144,6 @@ namespace BarCheck.ViewModel
         }
 
 
-        public Visibility MFEVisible
-        {
-            get
-            {
-#if MFE
-                return Visibility.Collapsed;
-#else
-                return Visibility.Visible;
-#endif
-
-            }
-
-        }
-
         private AllBarcodeViewModel lastAllBarcode;
         public AllBarcodeViewModel LastAllBarcode
         {
@@ -716,6 +702,7 @@ namespace BarCheck.ViewModel
                                     {
                                         if (!anotherBarcodeWithin2Seconds)
                                         {
+                                            this.PlaySound(Constants.sndNR);
                                             this.Light(Constants.LightNR);
                                             AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
                                                 barcode,
@@ -750,12 +737,12 @@ namespace BarCheck.ViewModel
                     }
                     if (dup)
                     {
-                        this.PlaySound(Constants.sndNR);
+                        this.PlaySound(Constants.sndDup);
                         this.Light(Constants.LightDup);
                     }
                     else
                     {
-                        this.PlaySound(Constants.sndDup);
+                        this.PlaySound(Constants.sndOK);
                         this.Light(Constants.LightOK);
                     }
                     AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, true, dup, oldCount + 1);

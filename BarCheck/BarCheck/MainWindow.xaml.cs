@@ -88,7 +88,7 @@ namespace BarCheck
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-#if MFE
+#if NOLOGIN
             return;
 #else
             if (this.mainVM.ObsAllBarcodes.Count > 0)
@@ -105,7 +105,7 @@ namespace BarCheck
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-#if MFE
+#if NOLOGIN
             return;
 #else
             LoginWindow win = new LoginWindow();

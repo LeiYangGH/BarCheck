@@ -16,7 +16,6 @@ page directory
 Page instfiles
 
 Section "x" SEC01
-
 SectionIn RO
   SetOutPath "$INSTDIR\Wav"
   SetOverwrite on
@@ -29,7 +28,7 @@ File "Releases\*"
 writeUninstaller "$INSTDIR\uninstall.exe"
 CreateShortCut "$DESKTOP\BarCheck.lnk" "$INSTDIR\BarCheck.exe" "" "$INSTDIR\seim.ico"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName" "BarCheck"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "Publisher" "$\"${COMPANYNAME}$\""
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "Publisher" "成都希萌科技"
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
@@ -41,21 +40,16 @@ SectionEnd
 
 section "uninstall"
  
-	# Remove Start Menu launcher
 	delete "$DESKTOP\BarCheck.lnk"
  
  
-	# Remove files
 	delete $INSTDIR\*
 	delete $INSTDIR\Wav\*
 	rmDir $INSTDIR\Wav
  
-	# Always delete uninstaller as the last action
 	delete $INSTDIR\uninstall.exe
  
-	# Try to remove the install directory - this will only happen if it is empty
 	rmDir $INSTDIR
  
-	# Remove uninstaller information from the registry
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}"
 sectionEnd

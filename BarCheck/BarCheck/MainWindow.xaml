@@ -14,24 +14,6 @@
         Closing="Window_Closing"
 		>
     <Window.Resources>
-        <Style TargetType="Button" x:Key="RoundBtn">
-            <Style.Setters>
-                <Setter Property="Margin" Value="30"></Setter>
-                <Setter Property="Cursor" Value="Hand"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Grid>
-                                <Ellipse Fill="{TemplateBinding Background}"
-                                         Width="85" Height="85"></Ellipse>
-                                <ContentPresenter TextBlock.FontSize="20"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style.Setters>
-        </Style>
         <Style TargetType="TextBlock" x:Key="BarcodeStyle">
             <Setter Property="FontSize" Value="15"/>
         </Style>
@@ -87,12 +69,10 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button Background="Green"  Style="{StaticResource RoundBtn}"
-                            Visibility="{Binding MFEVisible, Mode=OneTime}"
                             Command="{Binding OpenCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}">
                         运行
                     </Button>
                     <Button Grid.Column="1" 
-                            Visibility="{Binding MFEVisible, Mode=OneTime}"
                             Background="Red"  Style="{StaticResource RoundBtn}"
                             Command="{Binding CloseCommand}" IsEnabled="{Binding IsOpened, Mode=OneWay}">
                         停止
