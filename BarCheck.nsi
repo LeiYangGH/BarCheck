@@ -2,7 +2,7 @@
 !define PRODUCT_VERSION "1.0"
 !define APPNAME "BarCheck"
 !define COMPANYNAME "CDSEIM"
-!define INSTALLSIZE 600
+!define INSTALLSIZE 1500
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
 
@@ -24,6 +24,7 @@ SectionIn RO
   SetOutPath "$INSTDIR"
   SetOverwrite on
 File "seim.ico"
+File "Docs\User_Guide.pdf"
 File "Releases\*"
 writeUninstaller "$INSTDIR\uninstall.exe"
 CreateShortCut "$DESKTOP\BarCheck.lnk" "$INSTDIR\BarCheck.exe" "" "$INSTDIR\seim.ico"

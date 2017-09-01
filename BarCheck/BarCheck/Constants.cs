@@ -1,6 +1,7 @@
 ﻿using BarCheck.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace BarCheck
             };
         public const string ComUnknown = "COM?";
         public const string Users = "users";
+        public static readonly string HelpPdf = Path.Combine(Path.Combine(Environment.CurrentDirectory, "User_Guide.pdf"));
 
         public static readonly byte[] LightAllOn = { 0x55, 0x01, 0x02, 0x03, 0x04, 0xEE };
         public static readonly byte[] LightAllOff = { 0x55, 0xF1, 0xF2, 0xF3, 0xF4, 0xEE };

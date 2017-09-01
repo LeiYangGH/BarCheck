@@ -82,5 +82,17 @@ namespace BarCheck.Properties {
                 this["ExportDir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int NRMaxCount {
+            get {
+                return ((int)(this["NRMaxCount"]));
+            }
+            set {
+                this["NRMaxCount"] = value;
+            }
+        }
     }
 }

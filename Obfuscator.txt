@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<Obfuscator>
+  <Var name="InPath" value="C:\G\BarCheck\BarCheck\BarCheck\bin\Release" />
+  <Var name="OutPath" value="C:\G\BarCheck\Releases" />
+
+  <Module file="$(InPath)\BarCheck.exe" />
+</Obfuscator>

@@ -69,6 +69,23 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private int nRMaxCount;
+        public int NRMaxCount
+        {
+            get
+            {
+                return this.nRMaxCount;
+            }
+            set
+            {
+                if (this.nRMaxCount != value)
+                {
+                    this.nRMaxCount = value;
+                    this.RaisePropertyChanged(nameof(NRMaxCount));
+                }
+            }
+        }
+
         private string duplicateError;
         private string selectedAPortName;
         public string SelectedAPortName

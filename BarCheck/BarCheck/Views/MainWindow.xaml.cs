@@ -1,6 +1,8 @@
 ﻿using BarCheck.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+//using System.Windows.Shapes;
 
 namespace BarCheck.Views
 {
@@ -115,6 +117,24 @@ namespace BarCheck.Views
                 this.Close();
             }
 #endif
+        }
+
+        private void btnHelp_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(Constants.HelpPdf))
+            {
+                try
+                {
+                    Process.Start(Path.Combine(Environment.CurrentDirectory, "User_Guide.pdf"));
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+                MessageBox.Show($"没找到帮助文档{Constants.HelpPdf}");
         }
     }
 }

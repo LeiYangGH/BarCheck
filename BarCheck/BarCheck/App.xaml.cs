@@ -24,6 +24,20 @@ namespace BarCheck
                 MessageBox.Show("不能同时运行多个程序实例！");
                 App.Current.Shutdown();
             }
+            else if (DateTime.Now > new DateTime(2017, 10, 31))
+            {
+                MessageBox.Show("试用期结束，请联系供应商！");
+                App.Current.Shutdown();
+            }
+            else if (DateTime.Now >= new DateTime(2017, 10, 15))
+            {
+                MessageBox.Show("试用期将于2017年10月31日结束！");
+            }
+            else if (DateTime.Now < new DateTime(2017, 9, 1))
+            {
+                MessageBox.Show("您不能让时间倒流！");
+                App.Current.Shutdown();
+            }
             else
                 base.OnStartup(e);
         }

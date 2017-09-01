@@ -20,6 +20,11 @@ Remove-Item "$makefromdir\*" -Recurse -Force
 Copy-Item "$debugdir\*" $makefromdir -Recurse -Exclude $exclude -Force
 Copy-Item "$BarDir\说明.txt" $makefromdir -Force
 
+#cd 'C:\Installs\Obfuscator'
+#.\Obfuscator.exe "$BarDir\Obfuscator.txt"
+
+#.'C:\Installs\Obfuscator\Obfuscar.Console'"$BarDir\Obfuscator.txt"
+
 cd 'C:\Program Files (x86)\NSIS'
 .\makensis.exe "$BarDir\BarCheck.nsi"
 $installout = "$BarDir\BarCheck_install.exe"

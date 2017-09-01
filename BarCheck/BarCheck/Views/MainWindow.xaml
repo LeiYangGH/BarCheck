@@ -38,6 +38,7 @@
             <MenuItem Header="导入" Command="{Binding ImportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <MenuItem Header="导出" Command="{Binding ExportCommand}" IsEnabled="{Binding IsOpened, Converter={StaticResource InvBool},Mode=OneWay}"></MenuItem>
             <CheckBox Name="chkTop" Content="窗口置顶"></CheckBox>
+            <MenuItem Name="btnHelp" Header="帮助" Click='btnHelp_Click'></MenuItem>
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

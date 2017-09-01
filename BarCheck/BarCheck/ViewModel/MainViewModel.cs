@@ -37,7 +37,6 @@ namespace BarCheck.ViewModel
             this.GetOtherSettings();
 #endif
             this.obsAllBarcodes = new ObservableCollection<AllBarcodeViewModel>();
-
             if (IsInDesignMode)
             {
 
@@ -260,7 +259,7 @@ namespace BarCheck.ViewModel
             {
                 Settings.Default.PortName = this.PortName;
                 Settings.Default.AlarmMs = this.alarmMs;
-
+                Settings.Default.NRMaxCount = this.nRMaxCount;
                 Settings.Default.Save();
             }
             this.OpenASerialPort();
@@ -399,6 +398,7 @@ namespace BarCheck.ViewModel
         }
 
         private int alarmMs;
+        private int nRMaxCount;
 
         private async Task Set()
         {
@@ -406,7 +406,7 @@ namespace BarCheck.ViewModel
             {
 
             });
-            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs}");
+            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount}");
             Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
             setWin.Owner = MainWindow.Instance;
@@ -414,6 +414,7 @@ namespace BarCheck.ViewModel
             setVM.SelectedPortName = this.PortName;
             setVM.SelectedAPortName = this.APortName;
             setVM.AlarmMs = this.alarmMs;
+            setVM.NRMaxCount = this.nRMaxCount;
             setVM.ExportDir = this.ExportDir;
 
             if (setWin.ShowDialog() ?? false)
@@ -422,10 +423,11 @@ namespace BarCheck.ViewModel
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
                 this.alarmMs = setVM.AlarmMs;
+                this.nRMaxCount = setVM.NRMaxCount;
                 this.ExportDir = setVM.ExportDir;
                 Settings.Default.ExportDir = ExportDir;
                 Settings.Default.Save();
-                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}");
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount}");
             }
         }
 
@@ -688,6 +690,7 @@ namespace BarCheck.ViewModel
             this.SendBytes(Constants.LightAllOff);
         }
 
+        private Stopwatch stopwatchLastNRRecord = new Stopwatch();
         private int NRTimes = 0;
         bool anotherBarcodeWithin2Seconds = false;
         private RegisteredWaitHandle registeredWaitHandle;
@@ -703,10 +706,19 @@ namespace BarCheck.ViewModel
                     int oldCount = this.ObsAllBarcodes.Count;
                     if (barcode.ToUpper() == Constants.NR)
                     {
+                        if (oldCount > 0
+                        && !this.ObsAllBarcodes[oldCount - 1].Valid
+                        && stopwatchLastNRRecord.ElapsedMilliseconds < 2000
+                        )
+                        {
+                            Debug.WriteLine($"TotalMilliseconds={stopwatchLastNRRecord.ElapsedMilliseconds}");
+                            Debug.WriteLine($"*****< 400*****");
+                            return;
+                        }
                         barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
                         this.IsRetry = true;
                         this.NRTimes++;
-                        if (this.NRTimes >= 3)
+                        if (this.NRTimes >= this.nRMaxCount)
                         {
                             if (this.registeredWaitHandle != null && anotherBarcodeWithin2Seconds == true)
                                 this.registeredWaitHandle.Unregister(null);
@@ -727,10 +739,11 @@ namespace BarCheck.ViewModel
                                                 barcode,
                                                 false, false, oldCount + 1);
                                             this.ObsAllBarcodes.Add(nrAllVM);
-                                            Debug.WriteLine($"*****timer{barcode}*********");
+                                            //Debug.WriteLine($"*****timer{barcode}*********");
                                             this.RaisePropertyChanged(nameof(GradeNoCount));
                                             this.LastAllBarcode = nrAllVM;
                                             BarcodeHistory.Instance.AppendBarcode(nrAllVM);
+                                            stopwatchLastNRRecord.Restart();
                                             this.IsRetry = false;
                                             this.NRTimes = 0;
                                         }
@@ -747,6 +760,7 @@ namespace BarCheck.ViewModel
                         {
                             this.IsRetry = true;
                             this.NRTimes = 0;
+                            stopwatchLastNRRecord.Reset();
                             return;
                         }
                         else
@@ -773,6 +787,7 @@ namespace BarCheck.ViewModel
                     BarcodeHistory.Instance.AppendBarcode(newAllVM);
                     this.IsRetry = false;
                     this.NRTimes = 0;
+                    stopwatchLastNRRecord.Reset();
                 }));
         }
 
@@ -789,6 +804,7 @@ namespace BarCheck.ViewModel
         private void GetOtherSettings()
         {
             this.alarmMs = Settings.Default.AlarmMs;
+            this.nRMaxCount = Settings.Default.NRMaxCount;
             this.ExportDir = Settings.Default.ExportDir;
         }
 
