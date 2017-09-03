@@ -4,6 +4,15 @@
    $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
    [System.IO.Compression.ZipFile]::CreateFromDirectory($sourcedir,$zipfilename)
 }
+
+function CreateDir($dir)
+{
+    If(!(test-path $dir))
+    {
+          New-Item -ItemType Directory -Force -Path $dir
+    }
+}
+
 $BarDir = 'C:\G\BarCheck'
 $MSBuildDir = 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin'
 If (-not (Test-Path $MSBuildDir)){
@@ -14,21 +23,19 @@ cd $MSBuildDir
 
 $dt = [DateTime]::Now.ToString("yyyyMMddHHmm") 
 $makefromdir ="$BarDir\Releases"
+CreateDir($makefromdir)
 $debugdir = "$BarDir\BarCheck\BarCheck\bin\Release"
 $exclude = @('*.pdb','*.xml','*vshost*','*.log')
 Remove-Item "$makefromdir\*" -Recurse -Force
 Copy-Item "$debugdir\*" $makefromdir -Recurse -Exclude $exclude -Force
 Copy-Item "$BarDir\说明.txt" $makefromdir -Force
 
-#cd 'C:\Installs\Obfuscator'
-#.\Obfuscator.exe "$BarDir\Obfuscator.txt"
-
-#.'C:\Installs\Obfuscator\Obfuscar.Console'"$BarDir\Obfuscator.txt"
 
 cd 'C:\Program Files (x86)\NSIS'
 .\makensis.exe "$BarDir\BarCheck.nsi"
 $installout = "$BarDir\BarCheck_install.exe"
 $installzipdir = "$BarDir\BarCheck_install"
+CreateDir($installzipdir)
 Remove-Item "$installzipdir\*" -Force
 Copy-Item "$BarDir\说明.txt" $installzipdir -Force
 Copy-Item $installout $installzipdir  -Force
