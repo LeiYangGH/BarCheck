@@ -24,12 +24,10 @@ namespace BarCheck.Views
     public partial class MainWindow : Window
     {
         private MainViewModel mainVM;
-        public static MainWindow Instance;
         public MainWindow()
         {
             InitializeComponent();
             this.mainVM = this.DataContext as MainViewModel;
-            MainWindow.Instance = this;
             this.Closing += (s, e) =>
               {
                   BarcodeHistory.Instance.Close();
@@ -37,6 +35,11 @@ namespace BarCheck.Views
             this.ShowVersion();
             Log.Instance.Logger.Info("\r\nUI started!");
 
+        }
+        public void ScrollListBoxToButtom(AllBarcodeViewModel allVM)
+        {
+            //this.lstAll.ScrollIntoView(this.lstAll.Items.OfType<object>().Last());
+            this.lstAll.ScrollIntoView(allVM);
         }
 
         private void ShowVersion()

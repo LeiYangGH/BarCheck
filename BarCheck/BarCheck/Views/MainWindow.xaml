@@ -117,7 +117,6 @@
                 </Grid.RowDefinitions>
                 <ListBox Name="lstAll" Margin="2,1" Grid.Row="0"
                  ItemsSource="{Binding ObsAllBarcodes,Mode=OneWay,IsAsync=True}" 
-                 local:ListBoxBehavior.ScrollOnNewItem="True"
                  VirtualizingPanel.IsVirtualizing="true"
                  VirtualizingPanel.VirtualizationMode="Recycling" 
                   HorizontalContentAlignment="Stretch">

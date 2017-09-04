@@ -93,14 +93,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BarcodeHistory.cs" />
-    <Compile Include="Capture.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\Status2BrushConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\IsRetryColorConverter.cs" />
     <Compile Include="Converters\Open2MsgConverter.cs" />
     <Compile Include="Converters\Status2DescConverter.cs" />
-    <Compile Include="ListBoxBehavior.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>

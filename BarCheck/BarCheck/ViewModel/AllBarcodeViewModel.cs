@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BarCheck.Views;
+using System.Windows;
 
 namespace BarCheck.ViewModel
 {
@@ -145,6 +146,7 @@ namespace BarCheck.ViewModel
                     () => !isRenameing));
             }
         }
+
         private async Task Rename()
         {
             await Task.Run(() =>
@@ -153,7 +155,7 @@ namespace BarCheck.ViewModel
             Log.Instance.Logger.Info("Rename");
 
             RenameWindow reWin = new RenameWindow();
-            reWin.Owner = MainWindow.Instance;
+            reWin.Owner = Application.Current.MainWindow;
             RenameViewModel setVM = (reWin.DataContext) as RenameViewModel;
 
             if (reWin.ShowDialog() ?? false)

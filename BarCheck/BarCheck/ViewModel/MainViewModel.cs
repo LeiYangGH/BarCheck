@@ -409,7 +409,7 @@ namespace BarCheck.ViewModel
             Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount}");
             Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
-            setWin.Owner = MainWindow.Instance;
+            setWin.Owner = Application.Current.MainWindow;
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
             setVM.SelectedAPortName = this.APortName;
@@ -488,6 +488,8 @@ namespace BarCheck.ViewModel
                 Regex reg = new Regex(@"([A-Z0-9]{2,20})\s+(\d{2,4})", RegexOptions.Compiled);
                 foreach (string line in File.ReadLines(fileName, Encoding.Default))
                 {
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
                     if (reg.IsMatch(line))
                     {
                         this.dicImport.Add(Tuple.Create<string, int>(reg.Match(line).Groups[1].Value,
@@ -697,105 +699,111 @@ namespace BarCheck.ViewModel
             this.SendBytes(Constants.LightAllOff);
         }
 
+        private MainWindow mainWin = Application.Current.MainWindow as MainWindow;
+        private void InvokeAddBarcode(AllBarcodeViewModel allVM)
+        {
+            if (App.Current != null)//walkaround
+                App.Current.Dispatcher.BeginInvoke(new Action(
+                    () =>
+                    {
+                        this.ObsAllBarcodes.Add(allVM);
+                        mainWin.ScrollListBoxToButtom(allVM);
+                    }));
+        }
+
         private Stopwatch stopwatchLastNRRecord = new Stopwatch();
         private int NRTimes = 0;
         bool anotherBarcodeWithin2Seconds = false;
         private RegisteredWaitHandle registeredWaitHandle;
+
         public void GotBarcode(string barcode)
         {
-            if (App.Current != null)//walkaround
-                App.Current.Dispatcher.BeginInvoke((Action)(delegate
+            anotherBarcodeWithin2Seconds = true;
+            barcode = barcode.Trim();
+            this.CurrentRawBarcode = barcode;
+            bool dup = false;
+            int oldCount = this.ObsAllBarcodes.Count;
+            if (barcode.ToUpper() == Constants.NR)
+            {
+                if (oldCount > 0
+                && !this.ObsAllBarcodes[oldCount - 1].Valid
+                && stopwatchLastNRRecord.ElapsedMilliseconds < 2000
+                )
                 {
-                    anotherBarcodeWithin2Seconds = true;
-                    barcode = barcode.Trim();
-                    this.CurrentRawBarcode = barcode;
-                    bool dup = false;
-                    int oldCount = this.ObsAllBarcodes.Count;
-                    if (barcode.ToUpper() == Constants.NR)
-                    {
-                        if (oldCount > 0
-                        && !this.ObsAllBarcodes[oldCount - 1].Valid
-                        && stopwatchLastNRRecord.ElapsedMilliseconds < 2000
-                        )
-                        {
-                            Debug.WriteLine($"TotalMilliseconds={stopwatchLastNRRecord.ElapsedMilliseconds}");
-                            Debug.WriteLine($"*****< 400*****");
-                            return;
-                        }
-                        barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
-                        this.IsRetry = true;
-                        this.NRTimes++;
-                        if (this.NRTimes >= this.nRMaxCount)
-                        {
-                            if (this.registeredWaitHandle != null && anotherBarcodeWithin2Seconds == true)
-                                this.registeredWaitHandle.Unregister(null);
+                    Debug.WriteLine($"TotalMilliseconds={stopwatchLastNRRecord.ElapsedMilliseconds}");
+                    Debug.WriteLine($"*****< 400*****");
+                    return;
+                }
+                barcode = Constants.NR + DateTime.Now.ToString("ddmmssfff");
+                this.IsRetry = true;
+                this.NRTimes++;
+                if (this.NRTimes >= this.nRMaxCount)
+                {
+                    if (this.registeredWaitHandle != null && anotherBarcodeWithin2Seconds == true)
+                        this.registeredWaitHandle.Unregister(null);
 
-                            anotherBarcodeWithin2Seconds = false;
+                    anotherBarcodeWithin2Seconds = false;
 
-                            this.registeredWaitHandle = ThreadPool.RegisterWaitForSingleObject(
-                                new AutoResetEvent(false),
-                                (state, bTimeout) =>
-                                {
-                                    App.Current.Dispatcher.BeginInvoke((Action)(delegate
-                                    {
-                                        if (!anotherBarcodeWithin2Seconds)
-                                        {
-                                            this.PlaySound(Constants.sndNR);
-                                            this.Light(Constants.LightNR);
-                                            AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
-                                                barcode,
-                                                false, false, oldCount + 1);
-                                            this.ObsAllBarcodes.Add(nrAllVM);
-                                            //Debug.WriteLine($"*****timer{barcode}*********");
-                                            this.RaisePropertyChanged(nameof(GradeNoCount));
-                                            this.LastAllBarcode = nrAllVM;
-                                            BarcodeHistory.Instance.AppendBarcode(nrAllVM);
-                                            stopwatchLastNRRecord.Restart();
-                                            this.IsRetry = false;
-                                            this.NRTimes = 0;
-                                        }
-                                    }));
-                                },
-                                null,
-                                TimeSpan.FromSeconds(1), true);
-                        }
-                        return;
-                    }//NR
-                    else if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
-                    {
-                        if (barcode == this.ObsAllBarcodes[oldCount - 1].Barcode)
+                    this.registeredWaitHandle = ThreadPool.RegisterWaitForSingleObject(
+                        new AutoResetEvent(false),
+                        (state, bTimeout) =>
                         {
-                            this.IsRetry = true;
-                            this.NRTimes = 0;
-                            stopwatchLastNRRecord.Reset();
-                            return;
-                        }
-                        else
-                        {
-                            dup = true;
-                        }
-                    }
-                    if (dup)
-                    {
-                        this.PlaySound(Constants.sndDup);
-                        this.Light(Constants.LightDup);
-                    }
-                    else
-                    {
-                        this.PlaySound(Constants.sndOK);
-                        this.Light(Constants.LightOK);
-                    }
-                    AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, true, dup, oldCount + 1);
-                    this.ObsAllBarcodes.Add(newAllVM);
-                    Debug.WriteLine($"*****main{barcode}*********");
-                    this.RaisePropertyChanged(nameof(GradeYesCount));
-                    this.RaisePropertyChanged(nameof(DupCount));
-                    this.LastAllBarcode = newAllVM;
-                    BarcodeHistory.Instance.AppendBarcode(newAllVM);
-                    this.IsRetry = false;
+                            if (!anotherBarcodeWithin2Seconds)
+                            {
+                                this.PlaySound(Constants.sndNR);
+                                this.Light(Constants.LightNR);
+                                AllBarcodeViewModel nrAllVM = new AllBarcodeViewModel(
+                                    barcode,
+                                    false, false, oldCount + 1);
+                                this.InvokeAddBarcode(nrAllVM);
+                                //Debug.WriteLine($"*****timer{barcode}*********");
+                                this.RaisePropertyChanged(nameof(GradeNoCount));
+                                this.LastAllBarcode = nrAllVM;
+                                BarcodeHistory.Instance.AppendBarcode(nrAllVM);
+                                stopwatchLastNRRecord.Restart();
+                                this.IsRetry = false;
+                                this.NRTimes = 0;
+                            }
+                        },
+                        null,
+                        TimeSpan.FromSeconds(1), true);
+                }
+                return;
+            }//NR
+            else if (this.ObsAllBarcodes.Any(x => x.Barcode == barcode))
+            {
+                if (barcode == this.ObsAllBarcodes[oldCount - 1].Barcode)
+                {
+                    this.IsRetry = true;
                     this.NRTimes = 0;
                     stopwatchLastNRRecord.Reset();
-                }));
+                    return;
+                }
+                else
+                {
+                    dup = true;
+                }
+            }
+            if (dup)
+            {
+                this.PlaySound(Constants.sndDup);
+                this.Light(Constants.LightDup);
+            }
+            else
+            {
+                this.PlaySound(Constants.sndOK);
+                this.Light(Constants.LightOK);
+            }
+            AllBarcodeViewModel newAllVM = new AllBarcodeViewModel(barcode, true, dup, oldCount + 1);
+            this.InvokeAddBarcode(newAllVM);
+            Debug.WriteLine($"*****main{barcode}*********");
+            this.RaisePropertyChanged(nameof(GradeYesCount));
+            this.RaisePropertyChanged(nameof(DupCount));
+            this.LastAllBarcode = newAllVM;
+            BarcodeHistory.Instance.AppendBarcode(newAllVM);
+            this.IsRetry = false;
+            this.NRTimes = 0;
+            stopwatchLastNRRecord.Reset();
         }
 
         private Random rnd = new Random();
