@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding SettingsViewModel, Source={StaticResource Locator}}"
-        Title="程序设置" Height="300" Width="300">
+        Title="程序设置" Height="300" Width="500">
     <Window.Resources>
     </Window.Resources>
     <Grid>

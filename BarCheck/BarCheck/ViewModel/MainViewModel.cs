@@ -573,6 +573,13 @@ namespace BarCheck.ViewModel
                 this.Message = txtFileName;
                 return true;
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                Log.Instance.Logger.Error(ex.Message);
+                this.Message = ex.Message;
+                MessageBox.Show($"导出失败，因为写入设置的导出路径需要管理员权限\n请到设置修改导出路径，或者下次以管理员身份运行程序。");
+                return false;
+            }
             catch (Exception ex)
             {
                 Log.Instance.Logger.Error(ex.Message);

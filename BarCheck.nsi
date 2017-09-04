@@ -24,11 +24,11 @@ SectionIn RO
   SetOutPath "$INSTDIR"
   SetOverwrite on
 File "seim.ico"
-File "Docs\User_Guide.pdf"
+#File "Docs\User_Guide.pdf"
 File "Releases\*"
 writeUninstaller "$INSTDIR\uninstall.exe"
-CreateShortCut "$DESKTOP\BarCheck.lnk" "$INSTDIR\BarCheck.exe" "" "$INSTDIR\seim.ico"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName" "BarCheck"
+CreateShortCut "$DESKTOP\标签百检装置软件.lnk" "$INSTDIR\BarCheck.exe" "" "$INSTDIR\seim.ico"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName" "标签百检装置软件"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "Publisher" "成都希萌科技"
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -41,7 +41,7 @@ SectionEnd
 
 section "uninstall"
  
-	delete "$DESKTOP\BarCheck.lnk"
+	delete "$DESKTOP\标签百检装置软件.lnk"
  
  
 	delete $INSTDIR\*

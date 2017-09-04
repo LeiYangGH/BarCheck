@@ -119,6 +119,7 @@ namespace BarCheck.Views
 #endif
         }
 
+#if HELP
         private void btnHelp_Click(object sender, RoutedEventArgs e)
         {
             if (File.Exists(Constants.HelpPdf))
@@ -136,5 +137,6 @@ namespace BarCheck.Views
             else
                 MessageBox.Show($"没找到帮助文档{Constants.HelpPdf}");
         }
+#endif
     }
 }

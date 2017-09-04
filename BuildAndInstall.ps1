@@ -28,7 +28,7 @@ $debugdir = "$BarDir\BarCheck\BarCheck\bin\Release"
 $exclude = @('*.pdb','*.xml','*vshost*','*.log')
 Remove-Item "$makefromdir\*" -Recurse -Force
 Copy-Item "$debugdir\*" $makefromdir -Recurse -Exclude $exclude -Force
-Copy-Item "$BarDir\说明.txt" $makefromdir -Force
+#Copy-Item "$BarDir\说明.txt" $makefromdir -Force
 
 
 cd 'C:\Program Files (x86)\NSIS'
