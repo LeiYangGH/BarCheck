@@ -38,7 +38,6 @@ namespace BarCheck.Views
         }
         public void ScrollListBoxToButtom(AllBarcodeViewModel allVM)
         {
-            //this.lstAll.ScrollIntoView(this.lstAll.Items.OfType<object>().Last());
             this.lstAll.ScrollIntoView(allVM);
         }
 
