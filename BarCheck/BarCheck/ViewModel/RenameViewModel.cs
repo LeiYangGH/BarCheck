@@ -16,8 +16,6 @@ namespace BarCheck.ViewModel
         public RenameViewModel()
         {
             this.InputBarcode = "";
-            Console.WriteLine("value--");
-
         }
 
         private string emptyError;

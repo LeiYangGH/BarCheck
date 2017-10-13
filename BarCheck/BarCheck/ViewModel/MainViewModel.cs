@@ -45,9 +45,44 @@ namespace BarCheck.ViewModel
             {
             }
 
-
         }
 
+
+        public void LoadLastHistory()
+        {
+            if (BarcodeHistory.Instance.UserWantsLoadLastFile())
+                this.ImportHistory();
+            BarcodeHistory.Instance.OpenHistoryFile();
+        }
+
+        private void ImportHistory()
+        {
+            List<AllBarcodeViewModel> lst = new List<AllBarcodeViewModel>();
+            foreach (string line in File.ReadLines(BarcodeHistory.Instance.historyFileName))
+            {
+                string[] parts = line.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 4)
+                    lst.Add(AllBarcodeViewModel.ConvertFromLine(parts));
+                else if (parts.Length == 2)
+                {
+                    this.RenameByLine(lst, parts);
+                }
+                else
+                    throw new Exception($"记录行格式错误: {line}");
+            }
+            foreach (AllBarcodeViewModel allVM in lst)
+            {
+                this.obsAllBarcodes.Add(allVM);
+            }
+            this.RaisePropertyChanged(nameof(ObsAllBarcodes));
+        }
+
+        private void RenameByLine(List<AllBarcodeViewModel> lst, string[] parts)
+        {
+            Debug.Assert(parts.Length == 2);
+            lst.First(x => x.Index == Convert.ToInt32(parts[0])).Barcode = parts[1];
+        }
 
         public string PortName
         {

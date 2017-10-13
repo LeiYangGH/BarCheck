@@ -96,22 +96,21 @@ namespace BarCheck.Views
 #if NOLOGIN
             return;
 #else
-            if (this.mainVM.ObsAllBarcodes.Count > 0)
-            {
-                if (MessageBox.Show("真的要关闭吗?显示的数据会丢失", "关闭程序", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                {
-                    Log.Instance.Logger.Info("UI closed!\r\n\r\n");
-                }
-                else
-                    e.Cancel = true;
-            }
+            //if (this.mainVM.ObsAllBarcodes.Count > 0)
+            //{
+            //    if (MessageBox.Show("真的要关闭吗?显示的数据会丢失", "关闭程序", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            //    {
+            //        Log.Instance.Logger.Info("UI closed!\r\n\r\n");
+            //    }
+            //    else
+            //        e.Cancel = true;
+            //}
 #endif
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 #if NOLOGIN
-            return;
 #else
             LoginWindow win = new LoginWindow();
             win.Owner = this;
@@ -120,6 +119,7 @@ namespace BarCheck.Views
                 this.Close();
             }
 #endif
+            this.mainVM.LoadLastHistory();
         }
 
 #if HELP

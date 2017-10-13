@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using BarCheck.Views;
 using System.Windows;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace BarCheck.ViewModel
 {
@@ -26,6 +28,33 @@ namespace BarCheck.ViewModel
                 this.Status = BarcodeStatus.Dup; //
             else
                 this.Status = BarcodeStatus.Yes; //
+        }
+
+        public AllBarcodeViewModel(string index, string barcode, string status, string date)
+        {
+            this.index = Convert.ToInt32(index);
+            this.barcode = barcode;
+            IFormatProvider ifp = new CultureInfo("en-us", true);
+            if (status == "不合格")
+            {
+                this.Status = BarcodeStatus.NO; //
+                this.Valid = false;
+                this.HasDup = false;
+            }
+            else if (status == "重复")
+            {
+                this.Status = BarcodeStatus.Dup; //
+                this.Valid = true;
+                this.HasDup = true;
+            }
+            else
+            {
+                this.Status = BarcodeStatus.Yes; //
+                this.Valid = true;
+                this.HasDup = false;
+            }
+            this.Date = DateTime.ParseExact(date, "yyyyMMdd:HHmmss", ifp);
+
         }
 
         private int index;
@@ -63,18 +92,18 @@ namespace BarCheck.ViewModel
         }
 
 
-        private bool grade;
+        private bool valid;
         public bool Valid
         {
             get
             {
-                return this.grade;
+                return this.valid;
             }
             set
             {
-                if (this.grade != value)
+                if (this.valid != value)
                 {
-                    this.grade = value;
+                    this.valid = value;
                     this.RaisePropertyChanged(nameof(Valid));
                 }
             }
@@ -161,12 +190,20 @@ namespace BarCheck.ViewModel
             if (reWin.ShowDialog() ?? false)
             {
                 this.Barcode = setVM.InputBarcode;
+                BarcodeHistory.Instance.AppendRenameBarcode(this.Index, setVM.InputBarcode);
             }
         }
 
         public override string ToString()
         {
             return $"{Index} {Barcode} { Constants.dicStatusDesc[this.Status]} {Date.ToString("yyyyMMdd:HHmmss")}";
+        }
+
+        public static AllBarcodeViewModel ConvertFromLine(string[] parts)
+        {
+            Debug.Assert(parts.Length == 4);
+            AllBarcodeViewModel allVM = new AllBarcodeViewModel(parts[0], parts[1], parts[2], parts[3]);
+            return allVM;
         }
     }
 }
