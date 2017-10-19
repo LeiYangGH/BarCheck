@@ -111,6 +111,31 @@
                     </Grid>
                 </TabItem>
 
+                <TabItem Header="NR忽略时间（毫秒）">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock  Text="一定时间内扫描任意多次NR不作计数或记录" Margin="5"
+                              />
+
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Slider Name="sldNRIgnoreTime" Grid.Row="0"  
+                                Minimum="500" Maximum="3000" MinHeight="15"
+                                HorizontalAlignment="Stretch"  VerticalAlignment="Center"
+                                Value="{Binding NRIgnoreTime,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></Slider>
+                            <TextBlock Grid.Row="1" Text="{Binding ElementName=sldNRIgnoreTime,Path=Value,Mode=OneWay}"
+                                   VerticalAlignment="Top" HorizontalAlignment="Center" MinWidth="50"></TextBlock>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
             </TabControl.Items>
         </TabControl>
 

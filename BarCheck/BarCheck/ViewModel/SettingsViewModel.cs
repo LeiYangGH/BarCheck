@@ -86,6 +86,23 @@ namespace BarCheck.ViewModel
             }
         }
 
+        private int nRIgnoreTime;
+        public int NRIgnoreTime
+        {
+            get
+            {
+                return this.nRIgnoreTime;
+            }
+            set
+            {
+                if (this.nRIgnoreTime != value)
+                {
+                    this.nRIgnoreTime = value;
+                    this.RaisePropertyChanged(nameof(NRIgnoreTime));
+                }
+            }
+        }
+
         private string duplicateError;
         private string selectedAPortName;
         public string SelectedAPortName

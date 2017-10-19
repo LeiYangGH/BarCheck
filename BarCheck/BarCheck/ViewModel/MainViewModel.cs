@@ -295,6 +295,7 @@ namespace BarCheck.ViewModel
                 Settings.Default.PortName = this.PortName;
                 Settings.Default.AlarmMs = this.alarmMs;
                 Settings.Default.NRMaxCount = this.nRMaxCount;
+                Settings.Default.NRIgnoreTime = this.nRIgnoreTime;
                 Settings.Default.Save();
             }
             this.OpenASerialPort();
@@ -434,6 +435,7 @@ namespace BarCheck.ViewModel
 
         private int alarmMs;
         private int nRMaxCount;
+        private int nRIgnoreTime;
 
         private async Task Set()
         {
@@ -441,7 +443,7 @@ namespace BarCheck.ViewModel
             {
 
             });
-            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount}");
+            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime}");
             Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
             setWin.Owner = Application.Current.MainWindow;
@@ -450,6 +452,7 @@ namespace BarCheck.ViewModel
             setVM.SelectedAPortName = this.APortName;
             setVM.AlarmMs = this.alarmMs;
             setVM.NRMaxCount = this.nRMaxCount;
+            setVM.NRIgnoreTime = this.nRIgnoreTime;
             setVM.ExportDir = this.ExportDir;
 
             if (setWin.ShowDialog() ?? false)
@@ -459,10 +462,11 @@ namespace BarCheck.ViewModel
                 this.RaisePropertyChanged(nameof(IsOpened));
                 this.alarmMs = setVM.AlarmMs;
                 this.nRMaxCount = setVM.NRMaxCount;
+                this.nRIgnoreTime = setVM.NRIgnoreTime;
                 this.ExportDir = setVM.ExportDir;
                 Settings.Default.ExportDir = ExportDir;
                 Settings.Default.Save();
-                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount}");
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime}");
             }
         }
 
@@ -762,7 +766,7 @@ namespace BarCheck.ViewModel
             {
                 if (oldCount > 0
                 && !this.ObsAllBarcodes[oldCount - 1].Valid
-                && stopwatchLastNRRecord.ElapsedMilliseconds < 2000
+                && stopwatchLastNRRecord.ElapsedMilliseconds < this.nRIgnoreTime
                 )
                 {
                     Debug.WriteLine($"TotalMilliseconds={stopwatchLastNRRecord.ElapsedMilliseconds}");
@@ -855,6 +859,7 @@ namespace BarCheck.ViewModel
         {
             this.alarmMs = Settings.Default.AlarmMs;
             this.nRMaxCount = Settings.Default.NRMaxCount;
+            this.nRIgnoreTime = Settings.Default.NRIgnoreTime;
             this.ExportDir = Settings.Default.ExportDir;
         }
 
