@@ -22,7 +22,8 @@ namespace BarCheck.Views
     /// </summary>
     public partial class LoginWindow : Window
     {
-        private string usersFileName = Path.Combine(Environment.CurrentDirectory, Constants.Users);
+        private string usersFileName = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.Users);
         private UsersReadWriter usersRW;
         private List<User> lstUsers;
         public LoginWindow()
