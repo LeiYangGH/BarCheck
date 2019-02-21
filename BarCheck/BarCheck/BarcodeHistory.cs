@@ -2,6 +2,7 @@
 using BarCheck.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ namespace BarCheck
         private StreamWriter sw;
         private string historyDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"BarCheck\BarcodeHistory");
         public string historyFileName;
+        public IList<string> last5DaysHistoryFiles = new List<string>();
         private readonly Regex regHistoryDate = new Regex(@"\d{8}_\d{4}", RegexOptions.Compiled);
         public static BarcodeHistory Instance
         {
@@ -52,29 +54,43 @@ namespace BarCheck
             }
             this.sw = new StreamWriter(this.historyFileName, true, Encoding.UTF8);
             this.sw.AutoFlush = true;
-            Log.Instance.Logger.Info($"Create/open file:{this.historyFileName}");
+            Log.Instance.Logger.Info($"Create file:{this.historyFileName}");
         }
 
-        private string GetLastHistoryFile()
+        private DateTime GetDateOfHistroyFile(string histroyFileName)
+        {
+            IFormatProvider ifp = new CultureInfo("en-us", true);
+            string dateString = this.regHistoryDate.Match(histroyFileName).Value;
+            return DateTime.ParseExact(dateString, "yyyyMMdd_HHmm", ifp);
+        }
+
+
+        private IList<string> GetLast5DaysHistoryFile()
         {
             return Directory.GetFiles(this.historyDir, "*.txt")
-                .Where(x => x.Contains(DateTime.Now.ToString("yyyyMMdd"))
-                            && this.regHistoryDate.IsMatch(x))
-                .OrderByDescending(x => new FileInfo(x).LastWriteTime)
-                .FirstOrDefault();
+                .Where(x => this.regHistoryDate.IsMatch(x))
+                .Where(x => GetDateOfHistroyFile(x) > DateTime.Now.AddDays(-5))
+                .OrderBy(x => GetDateOfHistroyFile(x))
+                .ToList();
         }
 
-        public bool UserWantsLoadLastFile()
+        private string CombineFileNames(IList<string> foundHistoryFileNames)
+        {
+            return string.Join(Environment.NewLine,
+                foundHistoryFileNames.Select(f => Path.GetFileNameWithoutExtension(f)));
+        }
+
+
+        public bool UserWantsImportHistoryFiles()
         {
             bool useLast = false;
-            string foundHistoryFileName = this.GetLastHistoryFile();
-            if (!string.IsNullOrWhiteSpace(foundHistoryFileName)
-                && MessageBox.Show(Path.GetFileNameWithoutExtension(foundHistoryFileName),
-                    "检测到今天上次的扫描记录，是否导入？",
+            this.last5DaysHistoryFiles = this.GetLast5DaysHistoryFile();
+            if ((this.last5DaysHistoryFiles != null) && this.last5DaysHistoryFiles.Count() > 0
+                && MessageBox.Show(this.CombineFileNames(this.last5DaysHistoryFiles),
+                    "检测到最近5天的扫描记录，是否导入？",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 useLast = true;
-                this.historyFileName = foundHistoryFileName;
             }
             return useLast;
         }

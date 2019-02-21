@@ -22,6 +22,8 @@ namespace BarCheck.ViewModel
             this.HasDup = dup;
             this.index = index;
             this.Date = DateTime.Now;
+            this.IsImportedFromHistory = false;
+
             if (!this.Valid)
                 this.Status = BarcodeStatus.NO; //
             else if (this.HasDup)
@@ -30,6 +32,13 @@ namespace BarCheck.ViewModel
                 this.Status = BarcodeStatus.Yes; //
         }
 
+        /// <summary>
+        /// only for import
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="barcode"></param>
+        /// <param name="status"></param>
+        /// <param name="date"></param>
         public AllBarcodeViewModel(string index, string barcode, string status, string date)
         {
             this.index = Convert.ToInt32(index);
@@ -54,7 +63,7 @@ namespace BarCheck.ViewModel
                 this.HasDup = false;
             }
             this.Date = DateTime.ParseExact(date, "yyyyMMdd:HHmmss", ifp);
-
+            this.IsImportedFromHistory = true;
         }
 
         private int index;
@@ -91,6 +100,11 @@ namespace BarCheck.ViewModel
             }
         }
 
+        public bool IsImportedFromHistory
+        {
+            get;
+            private set;
+        }
 
         private bool valid;
         public bool Valid
