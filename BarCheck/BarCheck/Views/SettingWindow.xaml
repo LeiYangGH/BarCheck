@@ -25,6 +25,14 @@
                         </ComboBox>
                     </Grid>
                 </TabItem>
+                <TabItem Header="条码格式限制">
+                    <Grid>
+                        <ComboBox  Grid.Row="0" ItemsSource="{Binding ObsBarcodeFormats,Mode=OneWay}" Text="{Binding SelectedBarcodeFormat}"
+                  Style="{StaticResource CenterComboBox}" MinWidth="300" FontSize="30"
+                                   VerticalAlignment="Top" Margin="10">
+                        </ComboBox>
+                    </Grid>
+                </TabItem>
                 <TabItem Header="灯光串口">
                     <Grid>
                         <Grid.RowDefinitions>

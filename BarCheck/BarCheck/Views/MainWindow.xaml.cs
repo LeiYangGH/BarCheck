@@ -57,6 +57,13 @@ namespace BarCheck.Views
         int currentIndex = 0;
         List<string> lstBarcodes = new List<string>()
         {
+
+            "AAA0000000X",
+            "15184432110",
+            "151844j2110",
+            "A0000000X",
+            "A00000000000X",
+            "A00000000000Y",
             "B000000000001",
             "NR",
             "NR",

@@ -33,6 +33,7 @@ namespace BarCheck.ViewModel
             this.PortName = "COM10";
 #else
             this.PortName = this.GetFirstPortName();
+            this.SelectedBarcodeFormat = this.GetDefaultBarcodeFormat();
             this.APortName = this.GetSecondPortName();
             this.GetOtherSettings();
 #endif
@@ -100,6 +101,33 @@ namespace BarCheck.ViewModel
                 {
                     this.serialPort.PortName = value;
                     this.RaisePropertyChanged(nameof(PortName));
+                }
+            }
+        }
+
+
+
+        private string selectedBarcodeFormat;
+        public string SelectedBarcodeFormat
+        {
+            get
+            {
+                return this.selectedBarcodeFormat;
+            }
+            set
+            {
+                if (this.selectedBarcodeFormat != value)
+                {
+                    this.selectedBarcodeFormat = value;
+                    if (!string.IsNullOrWhiteSpace(this.selectedBarcodeFormat))
+                    {
+                        string regForat = SettingsViewModel.dictBarcodeFormats[this.selectedBarcodeFormat];
+                        this.regBarcodeFormat = new Regex(regForat, RegexOptions.Compiled);
+                    }
+                    else
+                        this.regBarcodeFormat = new Regex(".{3,}", RegexOptions.Compiled);
+
+                    this.RaisePropertyChanged(nameof(SelectedBarcodeFormat));
                 }
             }
         }
@@ -447,12 +475,13 @@ namespace BarCheck.ViewModel
             {
 
             });
-            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime}");
+            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} SelectedBarcodeFormat={SelectedBarcodeFormat}");
             Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
             setWin.Owner = Application.Current.MainWindow;
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
+            setVM.SelectedBarcodeFormat = this.SelectedBarcodeFormat;
             setVM.SelectedAPortName = this.APortName;
             setVM.AlarmMs = this.alarmMs;
             setVM.NRMaxCount = this.nRMaxCount;
@@ -462,6 +491,7 @@ namespace BarCheck.ViewModel
             if (setWin.ShowDialog() ?? false)
             {
                 this.PortName = setVM.SelectedPortName;
+                this.SelectedBarcodeFormat = setVM.SelectedBarcodeFormat;
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
                 this.alarmMs = setVM.AlarmMs;
@@ -470,7 +500,7 @@ namespace BarCheck.ViewModel
                 this.ExportDir = setVM.ExportDir;
                 Settings.Default.ExportDir = ExportDir;
                 Settings.Default.Save();
-                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime}");
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} SelectedBarcodeFormat={SelectedBarcodeFormat}");
             }
         }
 
@@ -741,9 +771,23 @@ namespace BarCheck.ViewModel
             this.SendBytes(Constants.LightAllOff);
         }
 
+        private Regex regBarcodeFormat = new Regex(".{3,}", RegexOptions.Compiled);
+
+        private bool isBarcodeValidFormat(AllBarcodeViewModel allVM)
+        {
+            if (allVM.Valid)
+            {
+                return this.regBarcodeFormat.IsMatch(allVM.Barcode);
+            }
+            else
+                return true;
+        }
+
         private MainWindow mainWin = Application.Current.MainWindow as MainWindow;
         private void InvokeAddBarcode(AllBarcodeViewModel allVM)
         {
+            if (!this.isBarcodeValidFormat(allVM))
+                return;
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke(new Action(
                     () =>
@@ -864,6 +908,15 @@ namespace BarCheck.ViewModel
             this.nRMaxCount = Settings.Default.NRMaxCount;
             this.nRIgnoreTime = Settings.Default.NRIgnoreTime;
             this.ExportDir = Settings.Default.ExportDir;
+        }
+
+        private string GetDefaultBarcodeFormat()
+        {
+            string setPort = Settings.Default.PortName;
+            if (!string.IsNullOrWhiteSpace(setPort))
+                return setPort;
+            else
+                return "";
         }
 
         private string GetFirstPortName()
