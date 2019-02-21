@@ -31,6 +31,10 @@ namespace BarCheck.Views
             this.Closing += (s, e) =>
               {
                   BarcodeHistory.Instance.Close();
+                  if (this.mainVM.ObsAllBarcodes.Count == 0)
+                  {
+                      BarcodeHistory.Instance.Delete();
+                  }
               };
             this.ShowVersion();
             Log.Instance.Logger.Info("\r\nUI started!");

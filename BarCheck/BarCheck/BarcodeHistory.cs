@@ -110,6 +110,19 @@ namespace BarCheck
             Log.Instance.Logger.Info($"Closed file:{this.historyFileName}");
         }
 
+        public void Delete()
+        {
+            try
+            {
+                File.Delete(this.historyFileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Logger.Error(ex.Message);
+            }
+            Log.Instance.Logger.Info($"deleted empty file:{this.historyFileName}");
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
