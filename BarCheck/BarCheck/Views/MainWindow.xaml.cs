@@ -124,12 +124,15 @@ namespace BarCheck.Views
 #else
             LoginWindow win = new LoginWindow();
             win.Owner = this;
-            if (!(win.ShowDialog() ?? true))
+            if ((win.ShowDialog() ?? true))
+            {
+                this.mainVM.LoadLastHistory();
+            }
+            else
             {
                 this.Close();
             }
 #endif
-            this.mainVM.LoadLastHistory();
         }
 
 #if HELP
