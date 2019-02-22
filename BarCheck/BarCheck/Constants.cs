@@ -12,6 +12,7 @@ namespace BarCheck
     public static class Constants
     {
         public const char GradeSplitChar = '+';
+        public const string BarCheck = "BarCheck";
         public const string GradeSplitString = "+";
         public const string GradeFailScanString = "-";
         public const string NR = "NR";
