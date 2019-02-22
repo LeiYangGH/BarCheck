@@ -130,7 +130,7 @@ namespace BarCheck.Views
             }
             else
             {
-                this.Close();
+                Application.Current.Shutdown();
             }
 #endif
         }
