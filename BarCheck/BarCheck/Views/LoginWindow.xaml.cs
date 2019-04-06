@@ -29,9 +29,6 @@ namespace BarCheck.Views
         public LoginWindow()
         {
             InitializeComponent();
-            this.usersRW = new UsersReadWriter(usersFileName);
-            this.lstUsers = this.usersRW.ReadFile();
-            this.txtU.Text = Settings.Default.CurrentUser;
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -53,11 +50,20 @@ namespace BarCheck.Views
             else
             {
                 Log.Instance.Logger.Info($"{name} login failed");
+                this.txtStatus.Text = "登录失败！";
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!File.Exists(this.usersFileName))
+            {
+                this.txtStatus.Text = $"找不到用户信息文件{this.usersFileName}，请退出程序并检查！";
+                this.btnLogin.IsEnabled = false;
+            }
+            this.usersRW = new UsersReadWriter(this.usersFileName);
+            this.lstUsers = this.usersRW.ReadFile();
+            this.txtU.Text = Settings.Default.CurrentUser;
         }
     }
 }

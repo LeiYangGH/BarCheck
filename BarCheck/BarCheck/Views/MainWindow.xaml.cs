@@ -124,12 +124,13 @@ namespace BarCheck.Views
 #else
             LoginWindow win = new LoginWindow();
             win.Owner = this;
-            if ((win.ShowDialog() ?? true))
+            if (win.ShowDialog() ?? true)
             {
                 this.mainVM.LoadLastHistory();
             }
             else
             {
+                Log.Instance.Logger.Info("Login failed! Will exit application!");
                 Application.Current.Shutdown();
             }
 #endif

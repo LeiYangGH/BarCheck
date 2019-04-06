@@ -122,7 +122,16 @@ namespace BarCheck
 
         public void Close()
         {
-            this.sw.Close();
+            Log.Instance.Logger.Info($"Closed file:{this.historyFileName}");
+            try
+            {
+                if (this.sw != null)
+                    this.sw.Close();
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Logger.Error(ex.Message);
+            }
             Log.Instance.Logger.Info($"Closed file:{this.historyFileName}");
         }
 

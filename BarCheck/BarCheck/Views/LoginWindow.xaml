@@ -31,5 +31,9 @@
             </WindowsFormsHost>
             <Button Name="btnLogin" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0" VerticalAlignment="Center" Click="btnLogin_Click" >确定</Button>
         </Grid>
+        <StatusBar MaxHeight="20" VerticalAlignment="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="txtStatus"></TextBlock></StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
