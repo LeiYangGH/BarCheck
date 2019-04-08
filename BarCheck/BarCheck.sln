@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersFactory", "UsersFactor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersGenerator", "UsersGenerator\UsersGenerator.csproj", "{538D4621-F5E8-45D9-98C3-EF4F9981571F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlValidateRules", "XmlValidateRules\XmlValidateRules.csproj", "{38D3FDCC-44FE-4A95-A8AE-9EEFC0A3095D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{538D4621-F5E8-45D9-98C3-EF4F9981571F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{538D4621-F5E8-45D9-98C3-EF4F9981571F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{538D4621-F5E8-45D9-98C3-EF4F9981571F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D3FDCC-44FE-4A95-A8AE-9EEFC0A3095D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D3FDCC-44FE-4A95-A8AE-9EEFC0A3095D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D3FDCC-44FE-4A95-A8AE-9EEFC0A3095D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D3FDCC-44FE-4A95-A8AE-9EEFC0A3095D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

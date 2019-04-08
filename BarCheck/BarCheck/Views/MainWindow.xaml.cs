@@ -121,6 +121,9 @@ namespace BarCheck.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 #if NOLOGIN
+            ValidateRulesWindow vrWin = new ValidateRulesWindow();
+            vrWin.DataContext = new ValidateRulesViewModel();
+            vrWin.ShowDialog();
 #else
             LoginWindow win = new LoginWindow();
             win.Owner = this;

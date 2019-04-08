@@ -34,7 +34,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NOLOGIN1;A</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NOLOGIN;A</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -99,7 +99,9 @@
     <Compile Include="Converters\IsRetryColorConverter.cs" />
     <Compile Include="Converters\Open2MsgConverter.cs" />
     <Compile Include="Converters\Status2DescConverter.cs" />
+    <Compile Include="Data\ValidateRule.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="ViewModel\ValidateRulesViewModel.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -115,6 +117,9 @@
     <Compile Include="ViewModel\RenameViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Views\ValidateRulesWindow.xaml.cs">
+      <DependentUpon>ValidateRulesWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\DictionaryConverters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -150,6 +155,10 @@
     <Page Include="Views\SettingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ValidateRulesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -201,5 +210,6 @@
   <ItemGroup>
     <Resource Include="seim.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

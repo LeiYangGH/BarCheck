@@ -33,7 +33,6 @@ namespace BarCheck.ViewModel
             this.PortName = "COM10";
 #else
             this.PortName = this.GetFirstPortName();
-            this.SelectedBarcodeFormat = this.GetDefaultBarcodeFormat();
             this.APortName = this.GetSecondPortName();
             this.GetOtherSettings();
 #endif
@@ -125,7 +124,7 @@ namespace BarCheck.ViewModel
                         this.regBarcodeFormat = new Regex(regForat, RegexOptions.Compiled);
                     }
                     else
-                        this.regBarcodeFormat = new Regex(".{3,}", RegexOptions.Compiled);
+                        this.regBarcodeFormat = new Regex(".{2,}", RegexOptions.Compiled);
 
                     this.RaisePropertyChanged(nameof(SelectedBarcodeFormat));
                 }
@@ -720,6 +719,7 @@ namespace BarCheck.ViewModel
             }
             catch (Exception ex)
             {
+                Log.Instance.Logger.Error(ex.Message);
                 this.Message = ex.Message;
             }
         }
@@ -787,7 +787,8 @@ namespace BarCheck.ViewModel
         private void InvokeAddBarcode(AllBarcodeViewModel allVM)
         {
             if (!this.isBarcodeValidFormat(allVM))
-                return;
+                MessageBox.Show($"{allVM.Barcode}不符合指定的条码规则！");
+            return;
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke(new Action(
                     () =>
@@ -908,15 +909,6 @@ namespace BarCheck.ViewModel
             this.nRMaxCount = Settings.Default.NRMaxCount;
             this.nRIgnoreTime = Settings.Default.NRIgnoreTime;
             this.ExportDir = Settings.Default.ExportDir;
-        }
-
-        private string GetDefaultBarcodeFormat()
-        {
-            string setPort = Settings.Default.PortName;
-            if (!string.IsNullOrWhiteSpace(setPort))
-                return setPort;
-            else
-                return "";
         }
 
         private string GetFirstPortName()
