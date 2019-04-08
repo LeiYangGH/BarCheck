@@ -23,7 +23,7 @@
     <Setting Name="NRIgnoreTime" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
-    <Setting Name="SelectedBarcodeFormat" Type="System.String" Scope="User">
+    <Setting Name="SelectedT2VRuleName" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

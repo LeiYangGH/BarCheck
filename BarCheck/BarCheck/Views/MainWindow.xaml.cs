@@ -60,7 +60,8 @@ namespace BarCheck.Views
 
             "AAA0000000X",
             "15184432110",
-            "151844j2110",
+            "ABCDE32110",
+            "AXGDEGj2110",
             "A0000000X",
             "A00000000000X",
             "A00000000000Y",
@@ -90,7 +91,7 @@ namespace BarCheck.Views
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
 #if A
-            if (e.Key == Key.A)
+            if (e.Key == Key.A && this.mainVM != null)
             {
 
                 if (this.currentIndex < this.lstBarcodes.Count)
@@ -121,9 +122,6 @@ namespace BarCheck.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 #if NOLOGIN
-            ValidateRulesWindow vrWin = new ValidateRulesWindow();
-            vrWin.DataContext = new ValidateRulesViewModel();
-            vrWin.ShowDialog();
 #else
             LoginWindow win = new LoginWindow();
             win.Owner = this;
@@ -137,6 +135,13 @@ namespace BarCheck.Views
                 Application.Current.Shutdown();
             }
 #endif
+        }
+
+        private void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ValidateRulesWindow vrWin = new ValidateRulesWindow();
+            vrWin.DataContext = new ValidateRulesViewModel();
+            vrWin.ShowDialog();
         }
 
 #if HELP

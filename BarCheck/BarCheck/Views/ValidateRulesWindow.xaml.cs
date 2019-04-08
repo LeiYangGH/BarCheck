@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BarCheck.Properties;
+using BarCheck.ViewModel;
+using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +25,16 @@ namespace BarCheck.Views
         public ValidateRulesWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ValidateRulesViewModel setVRVM = (this.DataContext) as ValidateRulesViewModel;
+            Settings.Default.SelectedT2VRuleName = setVRVM.SelectedT2VRuleName;
+            Settings.Default.Save();
+            Log.Instance.Logger.Info($"SettingWindow btnOK_Click saved SelectedT2VRuleName={setVRVM.SelectedT2VRuleName}");
+            Messenger.Default.Send<string>(setVRVM.SelectedT2VRuleName);
+            this.DialogResult = true;
         }
     }
 }

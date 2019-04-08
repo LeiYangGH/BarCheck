@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using BarCheck.Views;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace BarCheck.ViewModel
 {
@@ -27,6 +28,7 @@ namespace BarCheck.ViewModel
         public static string currentUserName;
         public MainViewModel()
         {
+            Messenger.Default.Register<string>(this, (msg) => this.SelectedT2VRuleName = msg);
             this.serialPort.DataReceived += SerialPort_DataReceived;
             this.IsRetry = false;
 #if Test
@@ -105,28 +107,25 @@ namespace BarCheck.ViewModel
         }
 
 
-
-        private string selectedBarcodeFormat;
-        public string SelectedBarcodeFormat
+        private string selectedT2VRuleName;
+        public string SelectedT2VRuleName
         {
             get
             {
-                return this.selectedBarcodeFormat;
+                return this.selectedT2VRuleName;
             }
             set
             {
-                if (this.selectedBarcodeFormat != value)
+                if (this.selectedT2VRuleName != value)
                 {
-                    this.selectedBarcodeFormat = value;
-                    if (!string.IsNullOrWhiteSpace(this.selectedBarcodeFormat))
+                    this.selectedT2VRuleName = value;
+                    if (!string.IsNullOrWhiteSpace(this.selectedT2VRuleName))
                     {
-                        string regForat = SettingsViewModel.dictBarcodeFormats[this.selectedBarcodeFormat];
+                        string regForat = ValidateRulesViewModel.GetVRRegStrByT2(this.SelectedT2VRuleName);
                         this.regBarcodeFormat = new Regex(regForat, RegexOptions.Compiled);
                     }
                     else
                         this.regBarcodeFormat = new Regex(".{2,}", RegexOptions.Compiled);
-
-                    this.RaisePropertyChanged(nameof(SelectedBarcodeFormat));
                 }
             }
         }
@@ -464,6 +463,35 @@ namespace BarCheck.ViewModel
             }
         }
 
+
+        //
+        private bool isSetVRing;
+        private RelayCommand setVRCommand;
+        public RelayCommand SetVRCommand
+        {
+            get
+            {
+                return setVRCommand
+                  ?? (setVRCommand = new RelayCommand(
+                    async () =>
+                    {
+                        if (isSetVRing)
+                        {
+                            return;
+                        }
+
+                        isSetVRing = true;
+                        SetVRCommand.RaiseCanExecuteChanged();
+
+                        await SetVR();
+
+                        isSetVRing = false;
+                        SetVRCommand.RaiseCanExecuteChanged();
+                    },
+                    () => !isSetVRing));
+            }
+        }
+        //
         private int alarmMs;
         private int nRMaxCount;
         private int nRIgnoreTime;
@@ -474,13 +502,12 @@ namespace BarCheck.ViewModel
             {
 
             });
-            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} SelectedBarcodeFormat={SelectedBarcodeFormat}");
+            Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir} NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} selectedT2VRuleName={selectedT2VRuleName}");
             Log.Instance.Logger.Info("after settings:");
             SettingWindow setWin = new SettingWindow();
             setWin.Owner = Application.Current.MainWindow;
             SettingsViewModel setVM = (setWin.DataContext) as SettingsViewModel;
             setVM.SelectedPortName = this.PortName;
-            setVM.SelectedBarcodeFormat = this.SelectedBarcodeFormat;
             setVM.SelectedAPortName = this.APortName;
             setVM.AlarmMs = this.alarmMs;
             setVM.NRMaxCount = this.nRMaxCount;
@@ -490,7 +517,6 @@ namespace BarCheck.ViewModel
             if (setWin.ShowDialog() ?? false)
             {
                 this.PortName = setVM.SelectedPortName;
-                this.SelectedBarcodeFormat = setVM.SelectedBarcodeFormat;
                 this.APortName = setVM.SelectedAPortName;
                 this.RaisePropertyChanged(nameof(IsOpened));
                 this.alarmMs = setVM.AlarmMs;
@@ -499,10 +525,33 @@ namespace BarCheck.ViewModel
                 this.ExportDir = setVM.ExportDir;
                 Settings.Default.ExportDir = ExportDir;
                 Settings.Default.Save();
-                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} SelectedBarcodeFormat={SelectedBarcodeFormat}");
+                Log.Instance.Logger.Info($"Port={PortName} APort={APortName} alarmMs={alarmMs} ExportDir={ExportDir}  NRMaxCount={nRMaxCount} NRIgnoreTime={nRIgnoreTime} selectedT2VRuleName={selectedT2VRuleName}");
             }
         }
 
+
+        //vr
+        private async Task SetVR()
+        {
+            await Task.Run(() =>
+            {
+
+            });
+            Log.Instance.Logger.Info($"SelectedT2VRuleName={SelectedT2VRuleName}");
+            Log.Instance.Logger.Info("after settings:");
+            ValidateRulesWindow setVRWin = new ValidateRulesWindow();
+            setVRWin.Owner = Application.Current.MainWindow;
+            ValidateRulesViewModel setVRVM = (setVRWin.DataContext) as ValidateRulesViewModel;
+            setVRVM.AutoSelectLastValidateRule(this.SelectedT2VRuleName);
+            if (setVRWin.ShowDialog() ?? false)
+            {
+                this.SelectedT2VRuleName = setVRVM.SelectedT2VRuleName;
+                //Settings.Default.SelectedT2VRuleName = this.SelectedT2VRuleName;
+                //Settings.Default.Save();//dup?
+                Log.Instance.Logger.Info($"SelectedT2VRuleName={SelectedT2VRuleName}");
+            }
+        }
+        //vr
 
         //import--
         private bool isImporting;
@@ -787,8 +836,10 @@ namespace BarCheck.ViewModel
         private void InvokeAddBarcode(AllBarcodeViewModel allVM)
         {
             if (!this.isBarcodeValidFormat(allVM))
+            {
                 MessageBox.Show($"{allVM.Barcode}不符合指定的条码规则！");
-            return;
+                return;
+            }
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke(new Action(
                     () =>
@@ -909,6 +960,7 @@ namespace BarCheck.ViewModel
             this.nRMaxCount = Settings.Default.NRMaxCount;
             this.nRIgnoreTime = Settings.Default.NRIgnoreTime;
             this.ExportDir = Settings.Default.ExportDir;
+            this.SelectedT2VRuleName = Settings.Default.SelectedT2VRuleName;
         }
 
         private string GetFirstPortName()

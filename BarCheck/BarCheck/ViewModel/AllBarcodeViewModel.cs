@@ -1,15 +1,11 @@
-﻿using GalaSoft.MvvmLight;
+﻿using BarCheck.Views;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Microsoft.Practices.ServiceLocation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BarCheck.Views;
-using System.Windows;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace BarCheck.ViewModel
 {

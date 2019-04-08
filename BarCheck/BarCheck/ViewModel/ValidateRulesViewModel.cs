@@ -3,6 +3,8 @@ using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,25 +13,44 @@ using System.Xml.Linq;
 
 namespace BarCheck.ViewModel
 {
-    public class ValidateRulesViewModel : ViewModelBase
+    public class ValidateRulesViewModel : ViewModelBase, IDataErrorInfo
     {
-        private readonly Dictionary<string, List<ValidateRule>> dictRules;
-        private readonly string BarcodeFormatsXmlFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        private static Dictionary<string, List<ValidateRule>> dictRules;
+        private static string BarcodeFormatsXmlFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BarCheck", "BarcodeFormats.xml");
+
+        static ValidateRulesViewModel()
+        {
+            ValidateRulesViewModel.dictRules = ValidateRulesViewModel.ReadBarcodeFormatsXml(ValidateRulesViewModel.BarcodeFormatsXmlFileName);
+        }
 
         public ValidateRulesViewModel()
         {
-            this.dictRules = this.ReadBarcodeFormatsXml(this.BarcodeFormatsXmlFileName);
+            //ValidateRulesViewModel.dictRules = this.ReadBarcodeFormatsXml(ValidateRulesViewModel.BarcodeFormatsXmlFileName);
             this.CreateObsT1VRules();
             this.ObsT2VRuleNames = new ObservableCollection<string>(new List<string>());
-            this.AutoSelectLastValidateRule("组件一1");
+            //this.AutoSelectLastValidateRule("组件一1");
             //this.AutoSelectLastValidateRule("组件一2");
             //this.AutoSelectLastValidateRule("组件二2");
         }
 
+        public static string GetVRRegStrByT2(string t2)
+        {
+            string regstr = "";
+            foreach (var kv in ValidateRulesViewModel.dictRules)
+            {
+                if (kv.Value.Any(ru => ru.Name == t2))
+                {
+                    regstr = kv.Value.First(ru => ru.Name == t2).RegStr;
+                }
+            }
+            //Debug.Assert(!string.IsNullOrWhiteSpace(regstr));
+            return regstr;
+        }
+
         public void AutoSelectLastValidateRule(string lastT2ruleName)
         {
-            foreach (var kv in this.dictRules)
+            foreach (var kv in ValidateRulesViewModel.dictRules)
             {
                 if (kv.Value.Any(ru => ru.Name == lastT2ruleName))
                 {
@@ -43,20 +64,20 @@ namespace BarCheck.ViewModel
 
         private void CreateObsT1VRules()
         {
-            var t1s = this.dictRules.Keys;
+            var t1s = ValidateRulesViewModel.dictRules.Keys;
             this.ObsT1VRules = new ObservableCollection<string>(t1s);
         }
 
         private void CreateObsT2VRules(string t1)
         {
-            var vrules = this.dictRules[t1];
+            var vrules = ValidateRulesViewModel.dictRules[t1];
             this.ObsT2VRuleNames.Clear();
             foreach (string s in vrules.Select(vr => vr.Name))
                 this.ObsT2VRuleNames.Add(s);
 
         }
 
-        private Dictionary<string, List<ValidateRule>> ReadBarcodeFormatsXml(string fileName)
+        private static Dictionary<string, List<ValidateRule>> ReadBarcodeFormatsXml(string fileName)
         {
             var dict =
                 new Dictionary<string, List<ValidateRule>>();
@@ -142,6 +163,17 @@ namespace BarCheck.ViewModel
                 }
             }
         }
+
+        private string GetError()
+        {
+            string err = "";
+            if (string.IsNullOrWhiteSpace(this.selectedT2VRuleName))
+                err = $"必须选择二级条码规则！";
+            return err;
+        }
+
+        string IDataErrorInfo.Error => this.GetError();
+        string IDataErrorInfo.this[string columnName] => this.GetError();
     }
 
 

@@ -45,6 +45,7 @@ namespace BarCheck.ViewModel
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<RenameViewModel>();
+            SimpleIoc.Default.Register<ValidateRulesViewModel>();
         }
 
         public MainViewModel Main
@@ -68,6 +69,14 @@ namespace BarCheck.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<RenameViewModel>();
+            }
+        }
+
+        public ValidateRulesViewModel ValidateRulesViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<ValidateRulesViewModel>();
             }
         }
 

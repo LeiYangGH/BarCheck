@@ -1,45 +1,17 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BarCheck.ViewModel
 {
     public sealed class SettingsViewModel : ViewModelBase, IDataErrorInfo
     {
-        private string barcodeFormatsFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            @"BarCheck\BarcodeFormats.txt");
         public SettingsViewModel()
         {
             this.obsSerialPortNames = new ObservableCollection<string>(SerialPort.GetPortNames());
-            this.ReadBarcodeFormatsFile();
-            this.ObsBarcodeFormats = new ObservableCollection<string>(SettingsViewModel.dictBarcodeFormats.Keys);
-        }
-
-
-
-        public static Dictionary<string, string> dictBarcodeFormats = new Dictionary<string, string>();
-        private void ReadBarcodeFormatsFile()
-        {
-            if (!File.Exists(this.barcodeFormatsFile))
-                return;
-            foreach (string line in File.ReadLines(this.barcodeFormatsFile))
-            {
-                string[] parts = line.Trim().Split(new char[] { ':', '：' },
-                    StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                    SettingsViewModel.dictBarcodeFormats.Add(parts[0].Trim(), parts[1].Trim());
-                else
-                    Log.Instance.Logger.Error($"条码格式文件记录行格式错误: {line}");
-            }
         }
 
         private string exportDir;
@@ -76,22 +48,7 @@ namespace BarCheck.ViewModel
             }
         }
 
-        private string selectedBarcodeFormat;
-        public string SelectedBarcodeFormat
-        {
-            get
-            {
-                return this.selectedBarcodeFormat;
-            }
-            set
-            {
-                if (this.selectedBarcodeFormat != value)
-                {
-                    this.selectedBarcodeFormat = value;
-                    this.RaisePropertyChanged(nameof(SelectedBarcodeFormat));
-                }
-            }
-        }
+
 
 
         private int alarmMs;
@@ -184,22 +141,6 @@ namespace BarCheck.ViewModel
             }
         }
 
-        private ObservableCollection<string> obsBarcodeFormats;
-        public ObservableCollection<string> ObsBarcodeFormats
-        {
-            get
-            {
-                return this.obsBarcodeFormats;
-            }
-            set
-            {
-                if (this.obsBarcodeFormats != value)
-                {
-                    this.obsBarcodeFormats = value;
-                    this.RaisePropertyChanged(nameof(ObsBarcodeFormats));
-                }
-            }
-        }
 
         private bool isBrowseing;
         private RelayCommand browseCommand;
