@@ -1,4 +1,5 @@
 ﻿using BarCheck.Data;
+using BarCheck.Properties;
 using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace BarCheck.ViewModel
             //ValidateRulesViewModel.dictRules = this.ReadBarcodeFormatsXml(ValidateRulesViewModel.BarcodeFormatsXmlFileName);
             this.CreateObsT1VRules();
             this.ObsT2VRuleNames = new ObservableCollection<string>(new List<string>());
+
             //this.AutoSelectLastValidateRule("组件一1");
             //this.AutoSelectLastValidateRule("组件一2");
             //this.AutoSelectLastValidateRule("组件二2");
@@ -55,7 +57,7 @@ namespace BarCheck.ViewModel
                 if (kv.Value.Any(ru => ru.Name == lastT2ruleName))
                 {
                     this.SelectedT1VRule = kv.Key;
-                    this.selectedT2VRuleName = lastT2ruleName;
+                    this.SelectedT2VRuleName = lastT2ruleName;
                     break;
                 }
 

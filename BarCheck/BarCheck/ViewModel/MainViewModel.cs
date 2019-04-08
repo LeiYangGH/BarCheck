@@ -542,7 +542,6 @@ namespace BarCheck.ViewModel
             ValidateRulesWindow setVRWin = new ValidateRulesWindow();
             setVRWin.Owner = Application.Current.MainWindow;
             ValidateRulesViewModel setVRVM = (setVRWin.DataContext) as ValidateRulesViewModel;
-            setVRVM.AutoSelectLastValidateRule(this.SelectedT2VRuleName);
             if (setVRWin.ShowDialog() ?? false)
             {
                 this.SelectedT2VRuleName = setVRVM.SelectedT2VRuleName;
@@ -822,24 +821,14 @@ namespace BarCheck.ViewModel
 
         private Regex regBarcodeFormat = new Regex(".{3,}", RegexOptions.Compiled);
 
-        private bool isBarcodeValidFormat(AllBarcodeViewModel allVM)
+        private bool isBarcodeValidFormat(string barcode)
         {
-            if (allVM.Valid)
-            {
-                return this.regBarcodeFormat.IsMatch(allVM.Barcode);
-            }
-            else
-                return true;
+            return this.regBarcodeFormat.IsMatch(barcode);
         }
 
         private MainWindow mainWin = Application.Current.MainWindow as MainWindow;
         private void InvokeAddBarcode(AllBarcodeViewModel allVM)
         {
-            if (!this.isBarcodeValidFormat(allVM))
-            {
-                MessageBox.Show($"{allVM.Barcode}不符合指定的条码规则！");
-                return;
-            }
             if (App.Current != null)//walkaround
                 App.Current.Dispatcher.BeginInvoke(new Action(
                     () =>
@@ -861,6 +850,13 @@ namespace BarCheck.ViewModel
             this.CurrentRawBarcode = barcode;
             bool dup = false;
             int oldCount = this.ObsAllBarcodes.Count;
+
+            if (!this.isBarcodeValidFormat(barcode))
+            {
+                MessageBox.Show($"{barcode}不符合指定的条码规则！");
+                return;
+            }
+
             if (barcode.ToUpper() == Constants.NR)
             {
                 if (oldCount > 0

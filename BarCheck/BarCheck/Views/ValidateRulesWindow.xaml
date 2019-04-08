@@ -8,6 +8,8 @@
         DataContext="{Binding ValidateRulesViewModel, Source={StaticResource Locator}}"
         Title="条码规则" Height="250" Width="600"
         FontSize="30"
+        WindowStartupLocation="CenterOwner"
+        Loaded="Window_Loaded"
         >
     <Grid >
         <Grid.RowDefinitions>

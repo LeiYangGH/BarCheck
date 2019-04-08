@@ -127,6 +127,9 @@ namespace BarCheck.Views
             win.Owner = this;
             if (win.ShowDialog() ?? true)
             {
+                ValidateRulesWindow vrWin = new ValidateRulesWindow();
+                vrWin.DataContext = new ValidateRulesViewModel();
+                vrWin.ShowDialog();
                 this.mainVM.LoadLastHistory();
             }
             else
@@ -139,9 +142,7 @@ namespace BarCheck.Views
 
         private void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            ValidateRulesWindow vrWin = new ValidateRulesWindow();
-            vrWin.DataContext = new ValidateRulesViewModel();
-            vrWin.ShowDialog();
+
         }
 
 #if HELP

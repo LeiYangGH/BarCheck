@@ -36,5 +36,11 @@ namespace BarCheck.Views
             Messenger.Default.Send<string>(setVRVM.SelectedT2VRuleName);
             this.DialogResult = true;
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ValidateRulesViewModel setVRVM = (this.DataContext) as ValidateRulesViewModel;
+            setVRVM.AutoSelectLastValidateRule(Settings.Default.SelectedT2VRuleName);
+        }
     }
 }
