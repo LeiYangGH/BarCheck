@@ -27,7 +27,7 @@
         <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding ObsT1VRules}" Text="{Binding SelectedT1VRule,Mode=TwoWay}"
                   VerticalAlignment="Center" Margin="5"/>
         <ComboBox Grid.Row="1" x:Name="cboT2" Grid.Column="1" ItemsSource="{Binding ObsT2VRuleNames}" Margin="5"
-                  Text="{Binding SelectedT2VRuleName,Mode=TwoWay,ValidatesOnDataErrors=true}"
+                  Text="{Binding SelectedT2VRuleName,Mode=TwoWay,ValidatesOnDataErrors=true,UpdateSourceTrigger=PropertyChanged}"
             VerticalAlignment="Center"
                  >
             <ComboBox.Style>

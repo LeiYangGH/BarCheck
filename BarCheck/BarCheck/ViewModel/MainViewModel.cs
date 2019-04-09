@@ -28,7 +28,10 @@ namespace BarCheck.ViewModel
         public static string currentUserName;
         public MainViewModel()
         {
-            Messenger.Default.Register<string>(this, (msg) => this.SelectedT2VRuleName = msg);
+            Messenger.Default.Register<string>(this, nameof(MainViewModel),
+                (msg) => this.SelectedT2VRuleName = msg);
+            Messenger.Default.Register<string>(this, nameof(BarcodeHistory),
+                (msg) => this.LoadLastHistory());
             this.serialPort.DataReceived += SerialPort_DataReceived;
             this.IsRetry = false;
 #if Test
@@ -52,6 +55,9 @@ namespace BarCheck.ViewModel
 
         public void LoadLastHistory()
         {
+            this.ObsAllBarcodes.Clear();
+
+            BarcodeHistory.Instance.UpdateHistoryDir();
             if (BarcodeHistory.Instance.UserWantsImportHistoryFiles())
                 this.ImportHistory();
             BarcodeHistory.Instance.OpenHistoryFile();
@@ -75,10 +81,7 @@ namespace BarCheck.ViewModel
                     else
                         throw new Exception($"记录行格式错误: {line}");
                 }
-                foreach (AllBarcodeViewModel allVM in lst)
-                {
-                    this.obsAllBarcodes.Add(allVM);
-                }
+                this.obsAllBarcodes = new ObservableCollection<AllBarcodeViewModel>(lst);
             }
 
             this.RaisePropertyChanged(nameof(ObsAllBarcodes));
@@ -778,6 +781,11 @@ namespace BarCheck.ViewModel
         private bool soundFinished = true;
         public void PlaySound(string soundFullName)
         {
+            if (!File.Exists(soundFullName))
+            {
+                Log.Instance.Logger.Error($"找不到声音文件：{soundFullName}!");
+                return;
+            }
             this.player.SoundLocation = soundFullName;
             if (soundFinished)
             {

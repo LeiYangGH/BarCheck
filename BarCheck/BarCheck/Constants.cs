@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace BarCheck
@@ -13,6 +10,9 @@ namespace BarCheck
     {
         public const char GradeSplitChar = '+';
         public const string BarCheck = "BarCheck";
+        public static readonly string AppdataBarCheckDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            BarCheck);
         public const string GradeSplitString = "+";
         public const string GradeFailScanString = "-";
         public const string NR = "NR";

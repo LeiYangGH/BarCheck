@@ -17,8 +17,9 @@ namespace BarCheck
         private static readonly Lazy<BarcodeHistory> lazy =
             new Lazy<BarcodeHistory>(() => new BarcodeHistory());
         private StreamWriter sw;
-        private string historyDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"BarCheck\BarcodeHistory");
-        public string historyFileName;
+        //public string historySubDirT2 = Settings.Default.SelectedT2VRuleName;
+        private string historyDir = Path.Combine(Constants.AppdataBarCheckDir, "BarcodeHistory");
+        private string historyFileName;
         public IList<string> last5DaysHistoryFiles = new List<string>();
         private readonly Regex regHistoryDate = new Regex(@"\d{8}_\d{4}", RegexOptions.Compiled);
         public static BarcodeHistory Instance
@@ -28,15 +29,8 @@ namespace BarCheck
                 return lazy.Value;
             }
         }
+        public string GeneratedExportTxtName { get; private set; }
 
-        private string generatedExportTxtName;
-        public string GeneratedExportTxtName
-        {
-            get
-            {
-                return this.generatedExportTxtName;
-            }
-        }
 
         private BarcodeHistory()
         {
@@ -45,13 +39,22 @@ namespace BarCheck
 
         }
 
+        public void UpdateHistoryDir()
+        {
+            this.historyDir = Path.Combine(
+                Constants.AppdataBarCheckDir, "BarcodeHistory",
+                Settings.Default.SelectedT2VRuleName);
+            if (!Directory.Exists(historyDir))
+                Directory.CreateDirectory(historyDir);
+            Log.Instance.Logger.Info($"UpdateHistoryDir as:{this.historyDir}");
+        }
+
         public void OpenHistoryFile()
         {
-            if (string.IsNullOrWhiteSpace(this.historyFileName))
-            {
-                this.generatedExportTxtName = $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt";
-                this.historyFileName = Path.Combine(historyDir, this.GeneratedExportTxtName);
-            }
+            this.GeneratedExportTxtName =
+                $"{MainViewModel.currentUserName}{DateTime.Now.ToString("yyyyMMdd_HHmm")}.txt";
+            this.historyFileName = Path.Combine(
+                this.historyDir, this.GeneratedExportTxtName);
             this.sw = new StreamWriter(this.historyFileName, true, Encoding.UTF8);
             this.sw.AutoFlush = true;
             Log.Instance.Logger.Info($"Create file:{this.historyFileName}");
@@ -69,6 +72,7 @@ namespace BarCheck
         {
             return Directory.GetFiles(this.historyDir, "*.txt")
                 .Where(x => this.regHistoryDate.IsMatch(x))
+                .Where(x => new FileInfo(x).Length > 10)
                 .Where(x => GetDateOfHistroyFile(x) > DateTime.Now.AddDays(-5))
                 .OrderBy(x => GetDateOfHistroyFile(x))
                 .ToList();
@@ -87,7 +91,7 @@ namespace BarCheck
             this.last5DaysHistoryFiles = this.GetLast5DaysHistoryFile();
             if ((this.last5DaysHistoryFiles != null) && this.last5DaysHistoryFiles.Count() > 0
                 && MessageBox.Show(this.CombineFileNames(this.last5DaysHistoryFiles),
-                    "检测到最近5天的扫描记录，是否导入？",
+                    $"检测到{Settings.Default.SelectedT2VRuleName}格式的最近5天的扫描记录，是否导入？",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 useLast = true;
@@ -135,17 +139,20 @@ namespace BarCheck
             Log.Instance.Logger.Info($"Closed file:{this.historyFileName}");
         }
 
-        public void Delete()
+        public void DeleteIfEmpty()
         {
             try
             {
-                File.Delete(this.historyFileName);
+                if (new FileInfo(this.historyFileName).Length <= 0)
+                {
+                    File.Delete(this.historyFileName);
+                    Log.Instance.Logger.Info($"Deleted empty file:{this.historyFileName}");
+                }
             }
             catch (Exception ex)
             {
                 Log.Instance.Logger.Error(ex.Message);
             }
-            Log.Instance.Logger.Info($"deleted empty file:{this.historyFileName}");
         }
 
         protected virtual void Dispose(bool disposing)

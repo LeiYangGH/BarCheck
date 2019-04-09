@@ -1,20 +1,7 @@
 ﻿using BarCheck.ViewModel;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-//using System.Windows.Shapes;
 
 namespace BarCheck.Views
 {
@@ -28,14 +15,6 @@ namespace BarCheck.Views
         {
             InitializeComponent();
             this.mainVM = this.DataContext as MainViewModel;
-            this.Closing += (s, e) =>
-              {
-                  BarcodeHistory.Instance.Close();
-                  if (this.mainVM.ObsAllBarcodes.Count == 0)
-                  {
-                      BarcodeHistory.Instance.Delete();
-                  }
-              };
             this.ShowVersion();
             Log.Instance.Logger.Info("\r\nUI started!");
 
@@ -104,19 +83,9 @@ namespace BarCheck.Views
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-#if NOLOGIN
-            return;
-#else
-            //if (this.mainVM.ObsAllBarcodes.Count > 0)
-            //{
-            //    if (MessageBox.Show("真的要关闭吗?显示的数据会丢失", "关闭程序", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-            //    {
-            //        Log.Instance.Logger.Info("UI closed!\r\n\r\n");
-            //    }
-            //    else
-            //        e.Cancel = true;
-            //}
-#endif
+            BarcodeHistory.Instance.Close();
+            BarcodeHistory.Instance.DeleteIfEmpty();
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -130,7 +99,7 @@ namespace BarCheck.Views
                 ValidateRulesWindow vrWin = new ValidateRulesWindow();
                 vrWin.DataContext = new ValidateRulesViewModel();
                 vrWin.ShowDialog();
-                this.mainVM.LoadLastHistory();
+                //this.mainVM.LoadLastHistory();
             }
             else
             {
